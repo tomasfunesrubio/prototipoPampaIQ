@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/PampaIQ.html" },
+    { "source": "/(.*)", "destination": "/PampaIQ.html" }
+  ]
+}

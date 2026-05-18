@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <h1>Diagnosing...</h1>
+  <pre id="output" style="font-size: 16px; color: red; white-space: pre-wrap; word-wrap: break-word;"></pre>
+  <script>
+    fetch('PampaIQ.html')
+      .then(r => r.text())
+      .then(text => {
+        // Extract the content of <script type="text/babel">
+        const startTag = '<script type="text/babel">';
+        const endTag = '</script>';
+        const startIdx = text.indexOf(startTag);
+        if (startIdx === -1) {
+          document.getElementById('output').innerText = 'Could not find <script type="text/babel">';
+          return;
+        }
+        const content = text.substring(startIdx + startTag.length);
+        const scriptContent = content.substring(0, content.indexOf(endTag));
+        
+        try {
+          Babel.transform(scriptContent, { presets: ['react'] });
+          document.getElementById('output').innerText = 'No syntax error found by Babel!';
+          document.getElementById('output').style.color = 'green';
+        } catch (e) {
+          document.getElementById('output').innerText = 'SYNTAX ERROR:\n\n' + e.message;
+        }
+      })
+      .catch(e => {
+        document.getElementById('output').innerText = 'Fetch error: ' + e.message;
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l \"/mnt/c/Users/Tomas Funes/Desktop/Pampa IQ Para Antigravity/PampaIQ.html\")"
+    ]
+  }
+}
