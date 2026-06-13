@@ -209,7 +209,7 @@ const DashboardScreen = ({ onNav }) => {
                 onMouseLeave={e => e.currentTarget.style.boxShadow = ''}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 13, color: 'var(--dark)' }}>{lot.name} — {lot.crop}</div>
+                    <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 13, color: 'var(--dark)' }}>{lot.name} — {getLotCrop(lot.id)}</div>
                     <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>{campaign} · {stage}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -266,7 +266,7 @@ const LotDetailScreen = ({ lot, onBack, onNav }) => {
             <Icon name="back" size={14} /> Volver
           </button>
           <div className="page-title">{lot.name}</div>
-          <div className="page-subtitle">{lot.fieldName} · {lot.crop} · {fmt.area(lot.area)}</div>
+          <div className="page-subtitle">{lot.fieldName} · {getLotCrop(lot.id)} · {fmt.area(lot.area)}</div>
         </div>
         {campaign && <span className="badge badge-success">✓ Campaña activa</span>}
       </div>
@@ -437,13 +437,12 @@ const LotsScreen = ({ onNav }) => {
   const [lots, setLots] = useState(DATA.lots.filter(l => l.fieldId === 1));
   const [modal, setModal] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: '', area: '', crop: '' });
+  const [form, setForm] = useState({ name: '', area: '' });
   const [errors, setErrors] = useState({});
   const [confirmDel, setConfirmDel] = useState(null);
 
-  const crops = ['Soja', 'Maíz', 'Trigo', 'Girasol', 'Sorgo', 'Cebada'];
-  const openCreate = () => { setEditing(null); setForm({ name: '', area: '', crop: '' }); setErrors({}); setModal(true); };
-  const openEdit = (l) => { setEditing(l); setForm({ name: l.name, area: l.area, crop: l.crop }); setErrors({}); setModal(true); };
+  const openCreate = () => { setEditing(null); setForm({ name: '', area: '' }); setErrors({}); setModal(true); };
+  const openEdit = (l) => { setEditing(l); setForm({ name: l.name, area: l.area }); setErrors({}); setModal(true); };
 
   const validate = () => {
     const e = {};
@@ -476,7 +475,7 @@ const LotsScreen = ({ onNav }) => {
               <tr key={l.id}>
                 <td><span style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{l.name}</span></td>
                 <td className="td-mono">{fmt.area(l.area)}</td>
-                <td><span className="badge badge-info">{stageIcons[DATA.campaigns.find(c => c.lotId === l.id)?.phenoStage || ''] || ''} {l.crop}</span></td>
+                <td><span className="badge badge-info">{stageIcons[DATA.campaigns.find(c => c.lotId === l.id && c.status === 'activa')?.phenoStage || ''] || ''} {getLotCrop(l.id)}</span></td>
                 <td>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <button className="btn btn-ghost btn-icon btn-sm" onClick={() => onNav('campaigns')}><Icon name="eye" size={14} /></button>
@@ -502,13 +501,6 @@ const LotsScreen = ({ onNav }) => {
             <input className={`form-input ${errors.area ? 'error' : ''}`} type="number" value={form.area} onChange={e => setForm({ ...form, area: e.target.value })} placeholder="Ej. 120" />
             {errors.area && <span className="form-error">⚠ {errors.area}</span>}
           </div>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Cultivo actual</label>
-          <select className="form-input form-select" value={form.crop} onChange={e => setForm({ ...form, crop: e.target.value })}>
-            <option value="">Sin cultivo asignado</option>
-            {crops.map(c => <option key={c}>{c}</option>)}
-          </select>
         </div>
       </Modal>
       <ConfirmDialog open={!!confirmDel} onClose={() => setConfirmDel(null)} onConfirm={() => { setLots(lots.filter(l => l.id !== confirmDel)); setConfirmDel(null); }} title="Eliminar lote" message="¿Querés eliminar este lote? Se perderán todas las campañas y visitas asociadas." confirmLabel="Eliminar" danger />
@@ -750,7 +742,7 @@ const VisitCreateScreen = ({ step, setStep, form, setForm, errors, setErrors, on
                     <label className="form-label">Lote *</label>
                     <select className={`form-input form-select ${errors.lotId ? 'error' : ''}`} value={form.lotId} onChange={e => setForm({ ...form, lotId: e.target.value })}>
                       <option value="">Seleccionar lote...</option>
-                      {DATA.lots.filter(l => !form.fieldId || l.fieldId === Number(form.fieldId)).map(l => <option key={l.id} value={l.id}>{l.name} ({l.crop})</option>)}
+                      {DATA.lots.filter(l => !form.fieldId || l.fieldId === Number(form.fieldId)).map(l => <option key={l.id} value={l.id}>{l.name} ({getLotCrop(l.id)})</option>)}
                     </select>
                     {errors.lotId && <span className="form-error">⚠ {errors.lotId}</span>}
                   </div>

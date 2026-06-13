@@ -250,4 +250,11 @@ const alertSevIcon = { critical: '🚨', high: '⚠️', warning: '⚠️', info
 const alertSevLabel = { critical: 'Crítico', high: 'Alto', warning: 'Advertencia', info: 'Informativo' };
 const alertSevBadge = { critical: 'badge-critical', high: 'badge-critical', warning: 'badge-warning', info: 'badge-info' };
 
-Object.assign(window, { DATA, fmt, levelColors, levelSev, severityLabel, statusOrder, statusLabel, stageIcons, alertSevColor, alertSevIcon, alertSevLabel, alertSevBadge });
+const getLotCrop = (lotId) => {
+  const lot = DATA.lots.find(l => l.id === lotId);
+  const activeCampaign = DATA.campaigns.find(c => c.lotId === lotId && c.status === 'activa');
+  return activeCampaign ? activeCampaign.crop : (lot?.crop || 'Sin cultivo');
+};
+
+Object.assign(window, { DATA, fmt, levelColors, levelSev, severityLabel, statusOrder, statusLabel, stageIcons, alertSevColor, alertSevIcon, alertSevLabel, alertSevBadge, getLotCrop });
+

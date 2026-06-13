@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -2215,6 +2215,15 @@
     const alertSevBadge = { critical: 'badge-critical', high: 'badge-critical', warning: 'badge-warning', info: 'badge-info' };
 
 
+
+    const getLotCrop = (lotId) => {
+      const lot = DATA.lots.find(l => l.id === lotId);
+      const activeCampaign = DATA.campaigns.find(c => c.lotId === lotId && c.status === 'activa');
+      return activeCampaign ? activeCampaign.crop : (lot?.crop || 'Sin cultivo');
+    };
+
+    Object.assign(window, { DATA, fmt, levelColors, levelSev, severityLabel, statusOrder, statusLabel, stageIcons, alertSevColor, alertSevIcon, alertSevLabel, alertSevBadge, getLotCrop });
+
   </script>
 
   <script type="text/babel">
@@ -3048,7 +3057,7 @@
                     onMouseLeave={e => e.currentTarget.style.boxShadow = ''}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div>
-                        <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 13, color: 'var(--dark)' }}>{lot.name} — {lot.crop}</div>
+                        <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 13, color: 'var(--dark)' }}>{lot.name} — {getLotCrop(lot.id)}</div>
                         <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>{campaign} · {stage}</div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -3114,7 +3123,7 @@
                 <Icon name="back" size={14} /> Volver
               </button>
               <div className="page-title">{localLot.name}</div>
-              <div className="page-subtitle">{localLot.fieldName} · {localLot.crop} · {fmt.area(localLot.area)}</div>
+              <div className="page-subtitle">{localLot.fieldName} · {getLotCrop(localLot.id)} · {fmt.area(localLot.area)}</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
               {activeCampaign && <span className="badge badge-success">✓ Campaña activa</span>}
@@ -3128,7 +3137,7 @@
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 20 }}>
             <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '16px 20px' }}>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Cultivo actual</span>
-              <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 16 }}>{localLot.crop || 'Ninguno'}</span>
+              <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 16 }}>{getLotCrop(localLot.id)}</span>
             </div>
             <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '16px 20px' }}>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Campaña activa</span>
@@ -3449,16 +3458,15 @@
       const [allLots, setAllLots] = useState(DATA.lots);
       const lots = allLots.filter(l => l.fieldId === selectedFieldId);
       const [editing, setEditing] = useState(editLot || null);
-      const [form, setForm] = useState(editLot ? { name: editLot.name, area: editLot.area, crop: editLot.crop, gridConfig: editLot.gridConfig || '4x4' } : { name: '', area: '', crop: '', gridConfig: '4x4' });
+      const [form, setForm] = useState(editLot ? { name: editLot.name, area: editLot.area, gridConfig: editLot.gridConfig || '4x4' } : { name: '', area: '', gridConfig: '4x4' });
       const [errors, setErrors] = useState({});
       const [confirmDel, setConfirmDel] = useState(null);
       const [view, setView] = useState(editLot ? 'edit' : 'list');
       const [prevView, setPrevView] = useState('list');
       const [selected, setSelected] = useState(null);
 
-      const crops = ['Soja', 'Maíz', 'Trigo', 'Girasol', 'Sorgo', 'Cebada'];
-      const openCreate = () => { setPrevView(view); setEditing(null); setForm({ name: '', area: '', crop: '', gridConfig: '4x4' }); setErrors({}); setView('create'); };
-      const openEdit = (l) => { setPrevView(view); setEditing(l); setForm({ name: l.name, area: l.area, crop: l.crop, gridConfig: l.gridConfig || '4x4' }); setErrors({}); setView('edit'); };
+      const openCreate = () => { setPrevView(view); setEditing(null); setForm({ name: '', area: '', gridConfig: '4x4' }); setErrors({}); setView('create'); };
+      const openEdit = (l) => { setPrevView(view); setEditing(l); setForm({ name: l.name, area: l.area, gridConfig: l.gridConfig || '4x4' }); setErrors({}); setView('edit'); };
 
       const validate = () => {
         const e = {};
@@ -3526,13 +3534,6 @@
                         <input className={`form-input ${errors.area ? 'error' : ''}`} type="number" value={form.area} onChange={e => setForm({ ...form, area: e.target.value })} placeholder="Ej. 120" />
                         {errors.area && <span className="form-error">⚠ {errors.area}</span>}
                       </div>
-                    </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Cultivo actual</label>
-                      <select className="form-input form-select" value={form.crop} onChange={e => setForm({ ...form, crop: e.target.value })}>
-                        <option value="">Sin cultivo asignado</option>
-                        {crops.map(c => <option key={c}>{c}</option>)}
-                      </select>
                     </div>
                   </div>
                 </div>
@@ -3689,7 +3690,7 @@
           <div className="page-header">
             <div>
               <div className="page-title">Campañas</div>
-              <div className="page-subtitle">{selectedLot?.name} · {selectedLot?.crop} · {selectedLot?.area} has</div>
+              <div className="page-subtitle">{selectedLot?.name} · {selectedLot ? getLotCrop(selectedLot.id) : ''} · {selectedLot?.area} has</div>
             </div>
           </div>
 
@@ -3704,7 +3705,7 @@
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <label style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-head)', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Lote</label>
               <select className="form-input form-select" style={{ width: 210 }} value={selectedLotId} onChange={e => setSelectedLotId(Number(e.target.value))}>
-                {fieldLots.map(l => <option key={l.id} value={l.id}>{l.name} — {l.crop} ({l.area} has)</option>)}
+                {fieldLots.map(l => <option key={l.id} value={l.id}>{l.name} — {getLotCrop(l.id)} ({l.area} has)</option>)}
               </select>
             </div>
             {selectedLot && <div style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--text-secondary)' }}>📍 {selectedField?.province} · {selectedField?.district}</div>}
@@ -4318,7 +4319,7 @@
                         <label className="form-label">Lote *</label>
                         <select className={`form-input form-select ${errors.lotId ? 'error' : ''}`} value={form.lotId} onChange={e => setForm({ ...form, lotId: e.target.value })}>
                           <option value="">Seleccionar lote...</option>
-                          {DATA.lots.filter(l => !form.fieldId || l.fieldId === Number(form.fieldId)).map(l => <option key={l.id} value={l.id}>{l.name} ({l.crop})</option>)}
+                          {DATA.lots.filter(l => !form.fieldId || l.fieldId === Number(form.fieldId)).map(l => <option key={l.id} value={l.id}>{l.name} ({getLotCrop(l.id)})</option>)}
                         </select>
                         {errors.lotId && <span className="form-error">⚠ {errors.lotId}</span>}
                       </div>
@@ -8860,7 +8861,7 @@
                       <label className="form-label">Lote *</label>
                       <select className="form-input form-select" style={{ height: 48 }} value={mVisitForm.lotId} onChange={e => setMVisitForm(f => ({ ...f, lotId: e.target.value, campaignId: '' }))}>
                         <option value="">Seleccionar lote...</option>
-                        {DATA.lots.filter(l => !mVisitForm.fieldId || l.fieldId === Number(mVisitForm.fieldId)).map(l => <option key={l.id} value={l.id}>{l.name} ({l.crop})</option>)}
+                        {DATA.lots.filter(l => !mVisitForm.fieldId || l.fieldId === Number(mVisitForm.fieldId)).map(l => <option key={l.id} value={l.id}>{l.name} ({getLotCrop(l.id)})</option>)}
                       </select>
                     </div>
                     <div className="form-group">
@@ -10706,7 +10707,7 @@
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label style={{ fontSize: 11, fontFamily: 'var(--font-head)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>Lote</label>
                 <select className="form-input form-select" style={{ height: 44 }} value={mCampLotId} onChange={e => setMCampLotId(Number(e.target.value))}>
-                  {mCampFieldLots.map(l => <option key={l.id} value={l.id}>{l.name} — {l.crop} ({l.area} has)</option>)}
+                  {mCampFieldLots.map(l => <option key={l.id} value={l.id}>{l.name} — {getLotCrop(l.id)} ({l.area} has)</option>)}
                 </select>
               </div>
             </div>
