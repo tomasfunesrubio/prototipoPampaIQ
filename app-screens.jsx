@@ -927,7 +927,7 @@ const OrdersScreen = () => {
   const [view, setView] = useState('list');
   const [selected, setSelected] = useState(null);
   const [editing, setEditing] = useState(null);
-  const defaultForm = { fieldId: '', appType: '🚜 Mosquito / Pulverizadora terrestre', lotId: '', date: '', equipment: '', products: [{ id: 1, name: '', dose: '', quantity: '', cost: '' }], transportCost: '', fuelLiters: '', fuelPrice: '', laborDays: '', laborPrice: '', otherCost: '', otherDesc: '' };
+  const defaultForm = { fieldId: '', appType: '🚜 Mosquito / Pulverizadora terrestre', lotId: '', date: '', equipment: '', products: [{ id: 1, name: '', dose: '', quantity: '', price: '', cost: '' }], transportCost: '', fuelLiters: '', fuelPrice: '', laborDays: '', laborPrice: '', otherCost: '', otherDesc: '' };
   const [form, setForm] = useState(defaultForm);
   const [statusModal, setStatusModal] = useState(null);
 
@@ -942,10 +942,14 @@ const OrdersScreen = () => {
   const openEdit = (o) => {
     setEditing(o);
     const lot = DATA.lots.find(l => l.id === o.lotId);
-    setForm({ fieldId: lot?.fieldId || '', appType: o.appType || '🚜 Mosquito / Pulverizadora terrestre', lotId: o.lotId, date: o.date, equipment: o.equipment, products: [...o.products], transportCost: o.transportCost || '', fuelLiters: o.fuelLiters || '', fuelPrice: o.fuelPrice || '', laborDays: o.laborDays || '', laborPrice: o.laborPrice || '', otherCost: o.otherCost || '', otherDesc: o.otherDesc || '' });
+    const mappedProducts = o.products.map(p => {
+      const price = p.price !== undefined ? p.price : (p.cost / (parseFloat(p.quantity) || 1) || 0);
+      return { ...p, price };
+    });
+    setForm({ fieldId: lot?.fieldId || '', appType: o.appType || '🚜 Mosquito / Pulverizadora terrestre', lotId: o.lotId, date: o.date, equipment: o.equipment, products: mappedProducts, transportCost: o.transportCost || '', fuelLiters: o.fuelLiters || '', fuelPrice: o.fuelPrice || '', laborDays: o.laborDays || '', laborPrice: o.laborPrice || '', otherCost: o.otherCost || '', otherDesc: o.otherDesc || '' });
     setView('edit');
   };
-  const addProduct = () => setForm({ ...form, products: [...form.products, { id: Date.now(), name: '', dose: '', quantity: '', cost: '' }] });
+  const addProduct = () => setForm({ ...form, products: [...form.products, { id: Date.now(), name: '', dose: '', quantity: '', price: '', cost: '' }] });
   const updateProduct = (idx, p) => setForm({ ...form, products: form.products.map((pp, i) => i === idx ? p : pp) });
   const removeProduct = (idx) => setForm({ ...form, products: form.products.filter((_, i) => i !== idx) });
   const parseNum = v => parseFloat(v) || 0;
@@ -1025,7 +1029,7 @@ const OrdersScreen = () => {
           </div>
           <div className="table-wrap" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
             <table>
-              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad</th><th>Precio est.</th><th></th></tr></thead>
+              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad</th><th>Precio por litro</th><th></th></tr></thead>
               <tbody>
                 {form.products.map((p, i) => <EditableProductRow key={p.id} product={p} onChange={pp => updateProduct(i, pp)} onRemove={() => removeProduct(i)} />)}
               </tbody>
@@ -1142,16 +1146,20 @@ const OrdersScreen = () => {
           <div className="card-header"><div className="card-title">🧪 Productos a aplicar</div></div>
           <div className="table-wrap" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
             <table>
-              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad total</th><th>Costo estimado</th></tr></thead>
+              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad total</th><th>Precio por litro</th><th>Costo total</th></tr></thead>
               <tbody>
-                {selected.products.map(p => (
-                  <tr key={p.id}>
-                    <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{p.name}</td>
-                    <td className="td-mono">{p.dose}</td>
-                    <td className="td-mono">{p.quantity}</td>
-                    <td className="td-mono">{fmt.currency(p.cost || 0)}</td>
-                  </tr>
-                ))}
+                {selected.products.map(p => {
+                  const price = p.price !== undefined ? p.price : (p.cost / (parseFloat(p.quantity) || 1) || 0);
+                  return (
+                    <tr key={p.id}>
+                      <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{p.name}</td>
+                      <td className="td-mono">{p.dose}</td>
+                      <td className="td-mono">{p.quantity}</td>
+                      <td className="td-mono">{fmt.currency(price)}</td>
+                      <td className="td-mono">{fmt.currency(p.cost || 0)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1839,6 +1847,110 @@ const PestsCatalogScreen = () => {
 };
 
 // ══════════════════════════════════════════════════════════════════════════════
+// PRODUCTS CATALOG
+// ══════════════════════════════════════════════════════════════════════════════
+const ProductsCatalogScreen = () => {
+  const [products, setProducts] = useState(DATA.products || []);
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ name: '', tipoProducto: '', descripcion: '', precioPorLitro: '' });
+  const [errors, setErrors] = useState({});
+  const [confirmDel, setConfirmDel] = useState(null);
+
+  const productTypes = ['Herbicida', 'Fungicida', 'Insecticida', 'Fertilizante', 'Bioestimulante', 'Otro'];
+
+  const openCreate = () => { setEditing(null); setForm({ name: '', tipoProducto: '', descripcion: '', precioPorLitro: '' }); setErrors({}); setModal(true); };
+  const openEdit = (p) => { setEditing(p); setForm({ name: p.name, tipoProducto: p.tipoProducto, descripcion: p.descripcion || '', precioPorLitro: String(p.precioPorLitro) }); setErrors({}); setModal(true); };
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'El nombre es obligatorio';
+    if (!form.tipoProducto) e.tipoProducto = 'El tipo de producto es obligatorio';
+    if (!form.precioPorLitro || Number(form.precioPorLitro) <= 0) e.precioPorLitro = 'El precio por litro debe ser mayor a 0';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const save = () => {
+    if (!validate()) return;
+    const cleanForm = { ...form, precioPorLitro: Number(form.precioPorLitro) };
+    let nextProducts;
+    if (editing) {
+      nextProducts = products.map(p => p.id === editing.id ? { ...p, ...cleanForm } : p);
+    } else {
+      nextProducts = [...products, { id: Date.now(), ...cleanForm }];
+    }
+    setProducts(nextProducts);
+    DATA.products = nextProducts; // Sync back to global DATA
+    setModal(false);
+  };
+
+  const del = (id) => {
+    const nextProducts = products.filter(p => p.id !== id);
+    setProducts(nextProducts);
+    DATA.products = nextProducts; // Sync back to global DATA
+    setConfirmDel(null);
+  };
+
+  return (
+    <PageShell breadcrumbs={['Catálogo de Productos']} actions={<button className="btn btn-primary" onClick={openCreate}><Icon name="plus" size={14} color="#fff" /> Nuevo producto</button>}>
+      <div className="page-header">
+        <div><div className="page-title">Catálogo de Productos</div><div className="page-subtitle">{products.length} productos registrados</div></div>
+      </div>
+      <div className="table-wrap">
+        <table>
+          <thead><tr><th>Nombre</th><th>Tipo</th><th>Descripción</th><th>Precio por litro</th><th>Acciones</th></tr></thead>
+          <tbody>
+            {products.map(p => (
+              <tr key={p.id}>
+                <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>🧪 {p.name}</td>
+                <td><span className="badge badge-info">{p.tipoProducto}</span></td>
+                <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{p.descripcion || '—'}</td>
+                <td className="td-mono">{fmt.currency(p.precioPorLitro)}</td>
+                <td>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    <button className="btn btn-ghost btn-icon btn-sm" onClick={() => openEdit(p)}><Icon name="edit" size={14} /></button>
+                    <button className="btn btn-ghost btn-icon btn-sm" style={{ color: 'var(--critical)' }} onClick={() => setConfirmDel(p.id)}><Icon name="trash" size={14} /></button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Modal open={modal} onClose={() => setModal(false)} title={editing ? 'Editar producto' : 'Nuevo producto'}
+        footer={<><button className="btn btn-secondary" onClick={() => setModal(false)}>Cancelar</button><button className="btn btn-primary" onClick={save}>Guardar</button></>}>
+        <div className="form-group">
+          <label className="form-label">Nombre del producto *</label>
+          <input className={`form-input ${errors.name ? 'error' : ''}`} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Ej. Glifosato 48%" />
+          {errors.name && <span className="form-error">⚠ {errors.name}</span>}
+        </div>
+        <div className="form-row form-row-2">
+          <div className="form-group">
+            <label className="form-label">Tipo de producto *</label>
+            <select className={`form-input form-select ${errors.tipoProducto ? 'error' : ''}`} value={form.tipoProducto} onChange={e => setForm({ ...form, tipoProducto: e.target.value })}>
+              <option value="">Seleccionar...</option>
+              {productTypes.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            {errors.tipoProducto && <span className="form-error">⚠ {errors.tipoProducto}</span>}
+          </div>
+          <div className="form-group">
+            <label className="form-label">Precio por litro ($) *</label>
+            <input type="number" min="0" step="any" className={`form-input ${errors.precioPorLitro ? 'error' : ''}`} value={form.precioPorLitro} onChange={e => setForm({ ...form, precioPorLitro: e.target.value })} placeholder="Ej. 1500" />
+            {errors.precioPorLitro && <span className="form-error">⚠ {errors.precioPorLitro}</span>}
+          </div>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Descripción</label>
+          <textarea className="form-input" style={{ minHeight: 80, resize: 'vertical' }} value={form.descripcion} onChange={e => setForm({ ...form, descripcion: e.target.value })} placeholder="Opcional..." />
+        </div>
+      </Modal>
+      <ConfirmDialog open={!!confirmDel} onClose={() => setConfirmDel(null)} onConfirm={() => del(confirmDel)} title="Eliminar producto" message="¿Estás seguro que querés eliminar este producto? Esta acción no se puede deshacer." confirmLabel="Eliminar" danger />
+    </PageShell>
+  );
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
 // PROFILE
 // ══════════════════════════════════════════════════════════════════════════════
 const ProfileScreen = () => {
@@ -1921,40 +2033,220 @@ const ProfileScreen = () => {
 // ══════════════════════════════════════════════════════════════════════════════
 const UsersScreen = () => {
   const [tab, setTab] = useState('users');
-  const { modules, roles } = DATA.permissions;
+  const [users, setUsers] = useState(DATA.users);
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ name: '', email: '', role: 'Asesor', active: true, password: '' });
+  const [errors, setErrors] = useState({});
+  const [confirmDel, setConfirmDel] = useState(null);
+  const [generateNewPassword, setGenerateNewPassword] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  // 60% → --dark (Productor) · 30% → --text-secondary (Asesor) · 10% → --accent (Admin)
+  const roleAvatarBg = { Productor: 'var(--dark)', Asesor: 'var(--text-secondary)', Admin: 'var(--accent)' };
+  const roleBadgeStyle = {
+    Productor: { background: 'var(--accent-light)', color: 'var(--dark)',          border: '1px solid var(--border-dark)' },
+    Asesor:    { background: 'var(--bg)',           color: 'var(--text-secondary)', border: '1px solid var(--border)'      },
+    Admin:     { background: 'var(--dark)',          color: '#fff',                  border: 'none'                         },
+  };
+
+  const openCreate = () => {
+    setEditing(null);
+    setForm({ name: '', email: '', role: 'Asesor', active: true, password: '' });
+    setGenerateNewPassword(false);
+    setErrors({});
+    setModal(true);
+  };
+
+  const openEdit = (u) => {
+    setEditing(u);
+    setForm({ name: u.name, email: u.email, role: u.role, active: u.active, password: '' });
+    setGenerateNewPassword(false);
+    setErrors({});
+    setModal(true);
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'El nombre es requerido';
+    if (!form.email.trim()) e.email = 'El email es requerido';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Email inválido';
+    if (!editing && !form.password.trim()) e.password = 'La contraseña es requerida';
+    return e;
+  };
+
+  const save = () => {
+    const e = validate();
+    if (Object.keys(e).length) { setErrors(e); return; }
+    if (editing) {
+      let newPassword = null;
+      if (generateNewPassword) {
+        newPassword = 'Pampa-' + Math.floor(1000 + Math.random() * 9000);
+        console.log(`[SIMULACIÓN DE ENVÍO DE EMAIL] Se envió una nueva contraseña al usuario ${form.email}. Contraseña: ${newPassword}`);
+        setAlertMessage(`Se generó la contraseña "${newPassword}" y se simuló el envío del email a ${form.email}`);
+      }
+      setUsers(prev => prev.map(u => u.id === editing.id ? { ...u, name: form.name, email: form.email, role: form.role, active: form.active, ...(newPassword ? { password: newPassword } : {}) } : u));
+    } else {
+      setUsers(prev => [...prev, { id: Date.now(), name: form.name, email: form.email, role: form.role, active: form.active }]);
+    }
+    setModal(false);
+  };
+
+  const initials = (name) => name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+
+  // ── PERM MATRIX DATA ──────────────────────────────────────────────────────
+  const PERM_MATRIX = [
+    { section: 'Dashboard', rows: [
+      { action: 'Dashboard', productor: true, asesor: true, admin: true },
+    ]},
+    { section: 'Alertas', rows: [
+      { action: 'Ver', productor: true, asesor: true, admin: true },
+      { action: 'Configurar', productor: true, asesor: true, admin: true },
+    ]},
+    { section: 'Campos', rows: [
+      { action: 'Ver', productor: true, asesor: true, admin: true },
+      { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+    ]},
+    { section: 'Lotes', rows: [
+      { action: 'Ver', productor: true, asesor: true, admin: true },
+      { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+    ]},
+    { section: 'Campañas', rows: [
+      { action: 'Ver', productor: true, asesor: true, admin: true },
+      { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+    ]},
+    { section: 'Visitas', rows: [
+      { action: 'Ver', productor: true, asesor: true, admin: true },
+      { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
+    ]},
+    { section: 'Órdenes de Aplicación', rows: [
+      { action: 'Ver', productor: true, asesor: true, admin: true },
+      { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
+      { action: 'Cambiar estado', productor: true, asesor: false, admin: true },
+    ]},
+    { section: 'Análisis', rows: [
+      { action: 'Análisis Fenológico', productor: true, asesor: true, admin: true },
+      { action: 'Evolución Sanitaria', productor: true, asesor: true, admin: true },
+      { action: 'Resultado Sanitario', productor: true, asesor: false, admin: true },
+    ]},
+    { section: 'Catálogo de Plagas', rows: [
+      { action: 'Ver', productor: true, asesor: true, admin: true },
+      { action: 'Editar', productor: true, asesor: false, admin: true },
+    ]},
+    { section: 'Sistema', rows: [
+      { action: 'Usuarios y Permisos', productor: false, asesor: false, admin: true },
+      { action: 'Mi Perfil', productor: true, asesor: true, admin: true },
+    ]},
+  ];
+
+  const ROLES = [
+    { key: 'productor', label: 'Productor',       short: 'Productor', headerBg: 'var(--dark)',           headerColor: 'rgba(255,255,255,0.75)', cellBg: null,                  dot: 'var(--dark)' },
+    { key: 'asesor',    label: 'Asesor Agrónomo', short: 'Asesor',    headerBg: 'var(--dark)',           headerColor: 'rgba(255,255,255,0.75)', cellBg: null,                  dot: 'var(--text-secondary)' },
+    { key: 'admin',     label: 'Administrador',   short: 'Admin',     headerBg: 'var(--accent)',         headerColor: '#fff',                   cellBg: 'var(--accent-light)', dot: 'var(--accent)', badge: 'ACCESO TOTAL' },
+  ];
 
   return (
-    <PageShell breadcrumbs={['Gestión de Usuarios y Permisos']}>
+    <PageShell breadcrumbs={['Usuarios y Permisos']}>
       <div className="page-header">
-        <div><div className="page-title">Usuarios y Permisos</div><div className="page-subtitle">Administración de accesos al sistema</div></div>
-        <button className="btn btn-primary"><Icon name="plus" size={14} color="#fff" /> Nuevo usuario</button>
+        <div>
+          <div className="page-title">Usuarios y Permisos</div>
+          <div className="page-subtitle">{users.length} usuarios registrados</div>
+        </div>
+        {tab === 'users' && (
+          <button className="btn btn-primary" onClick={openCreate}>
+            <Icon name="plus" size={15} /> Nuevo usuario
+          </button>
+        )}
       </div>
 
+      {/* Alert message banner */}
+      {alertMessage && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          padding: '12px 16px',
+          borderRadius: 'var(--radius-lg)',
+          background: 'var(--success-light)',
+          border: '1.5px solid var(--border-dark)',
+          color: 'var(--success)',
+          marginBottom: 20,
+          boxShadow: 'var(--shadow-sm)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Icon name="check" size={16} color="var(--success)" />
+            <span style={{ fontSize: 13, fontWeight: 600 }}>{alertMessage}</span>
+          </div>
+          <button onClick={() => setAlertMessage('')} style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', padding: 2, cursor: 'pointer' }}>
+            <Icon name="x" size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Tabs */}
       <div className="tabs">
         <div className={`tab ${tab === 'users' ? 'active' : ''}`} onClick={() => setTab('users')}>Usuarios</div>
         <div className={`tab ${tab === 'perms' ? 'active' : ''}`} onClick={() => setTab('perms')}>Matriz de permisos</div>
       </div>
 
+      {/* ── USERS TAB ── */}
       {tab === 'users' && (
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th style={{ width: 100 }}>Acciones</th>
+              </tr>
+            </thead>
             <tbody>
-              {DATA.users.map(u => (
+              {users.map(u => (
                 <tr key={u.id}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <Avatar initials={u.name.split(' ').slice(-2).map(n => n[0]).join('')} size={28} bg={u.role === 'Admin' ? 'var(--dark)' : u.role === 'Asesor' ? '#6366F1' : 'var(--accent)'} />
-                      <span style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{u.name}</span>
+                      <Avatar initials={initials(u.name)} size={34} bg={roleAvatarBg[u.role] || 'var(--accent)'} />
+                      <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--dark)' }}>{u.name}</span>
                     </div>
                   </td>
-                  <td style={{ color: 'var(--text-secondary)' }}>{u.email}</td>
-                  <td><span className={`badge ${u.role === 'Admin' ? 'badge-neutral' : u.role === 'Asesor' ? 'badge-info' : 'badge-success'}`}>{u.role}</span></td>
-                  <td><span className={`badge ${u.active ? 'badge-success' : 'badge-closed'}`}>{u.active ? '✓ Activo' : '✗ Inactivo'}</span></td>
-                  <td><div style={{ display: 'flex', gap: 4 }}>
-                    <button className="btn btn-ghost btn-icon btn-sm"><Icon name="edit" size={14} /></button>
-                    <button className="btn btn-ghost btn-icon btn-sm" style={{ color: 'var(--critical)' }}><Icon name="trash" size={14} /></button>
-                  </div></td>
+                  <td style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{u.email}</td>
+                  <td>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-head)', ...(roleBadgeStyle[u.role] || roleBadgeStyle.Asesor) }}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
+                      <div
+                        onClick={() => setUsers(prev => prev.map(uu => uu.id === u.id ? { ...uu, active: !uu.active } : uu))}
+                        style={{
+                          width: 36, height: 20, borderRadius: 10, cursor: 'pointer', transition: 'background 0.2s',
+                          background: u.active ? 'var(--accent)' : 'var(--border-dark)', position: 'relative',
+                        }}>
+                        <div style={{
+                          position: 'absolute', top: 2, left: u.active ? 18 : 2,
+                          width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s',
+                        }} />
+                      </div>
+                      <span style={{ fontSize: 12, color: u.active ? 'var(--accent)' : 'var(--text-muted)', fontWeight: 600 }}>
+                        {u.active ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </label>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button className="btn btn-ghost btn-icon btn-sm" title="Editar" onClick={() => openEdit(u)}>
+                        <Icon name="edit" size={14} />
+                      </button>
+                      <button className="btn btn-ghost btn-icon btn-sm" title="Eliminar" onClick={() => setConfirmDel(u.id)}
+                        style={{ color: 'var(--critical)' }}>
+                        <Icon name="trash" size={14} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1962,43 +2254,191 @@ const UsersScreen = () => {
         </div>
       )}
 
+      {/* ── PERMS TAB ── */}
       {tab === 'perms' && (
-        <div className="perm-matrix table-wrap">
-          <table className="perm-table">
-            <thead>
-              <tr>
-                <th>Módulo</th>
-                {roles.map(r => <th key={r}>{r}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {modules.map((m, i) => (
-                <tr key={i}>
-                  <td>{m.name}</td>
-                  {roles.map(r => {
-                    const rKey = r.toLowerCase();
-                    const val = m[rKey];
-                    return (
-                      <td key={r} className="perm-check">
-                        {val === true && <span className="perm-icon" title="Acceso completo">✅</span>}
-                        {val === 'edit' && <span className="perm-icon" title="Lectura y edición">✏️</span>}
-                        {val === 'view' && <span className="perm-icon" title="Solo lectura">👁️</span>}
-                        {val === false && <span className="perm-icon" title="Sin acceso"><Icon name="lock" size={14} color="var(--text-muted)" /></span>}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)', display: 'flex', gap: 16, fontSize: 12, color: 'var(--text-secondary)' }}>
-            <span>✅ Acceso completo</span>
-            <span>✏️ Lectura y edición</span>
-            <span>👁️ Solo lectura</span>
-            <span><Icon name="lock" size={12} color="var(--text-muted)" style={{ display: 'inline' }} /> Sin acceso</span>
+        <>
+          {/* Role legend pills */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 20 }}>
+            {ROLES.map(r => (
+              <div key={r.key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 14px', borderRadius: 20, background: '#fff', border: '1.5px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ width: 9, height: 9, borderRadius: '50%', background: r.dot, flexShrink: 0 }} />
+                <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 13, color: 'var(--dark)' }}>{r.label}</span>
+                {r.badge && <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--accent)', background: 'var(--accent-light)', border: '1px solid var(--border-dark)', borderRadius: 6, padding: '1px 5px', letterSpacing: '0.06em' }}>{r.badge}</span>}
+              </div>
+            ))}
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 16, fontSize: 12, color: 'var(--text-secondary)', alignItems: 'center' }}>
+              <span>✅ Permitido</span>
+              <span>❌ Sin acceso</span>
+            </div>
+          </div>
+
+          {/* Matrix table */}
+          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 310px)', overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
+                <colgroup>
+                  <col style={{ width: '46%' }} />
+                  <col style={{ width: '18%' }} />
+                  <col style={{ width: '18%' }} />
+                  <col style={{ width: '18%' }} />
+                </colgroup>
+                <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                  <tr>
+                    <th style={{ background: 'var(--dark)', color: 'rgba(255,255,255,0.6)', padding: '13px 20px', textAlign: 'left', fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                      Módulo / Acción
+                    </th>
+                    {ROLES.map(r => (
+                      <th key={r.key} style={{ background: r.headerBg, color: r.headerColor, padding: '13px 10px', textAlign: 'center', fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
+                        {r.short}
+                        {r.badge && <div style={{ fontSize: 8, fontWeight: 800, color: 'var(--accent-light)', marginTop: 3, letterSpacing: '0.08em' }}>{r.badge}</div>}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {PERM_MATRIX.map((group, gi) => (
+                    <React.Fragment key={gi}>
+                      <tr style={{ background: 'var(--accent-light)' }}>
+                        <td colSpan={4} style={{ padding: '8px 20px', fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 11, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em', borderTop: gi > 0 ? '2px solid var(--border-dark)' : 'none' }}>
+                          {group.section}
+                        </td>
+                      </tr>
+                      {group.rows.map((row, ri) => (
+                        <tr key={ri} style={{ background: ri % 2 === 0 ? '#fff' : '#FAFBFA' }}>
+                          <td style={{ padding: '11px 20px 11px 28px', fontSize: 13, color: 'var(--dark)', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-body)' }}>
+                            {row.action}
+                          </td>
+                          {ROLES.map(r => {
+                            const allowed = row[r.key];
+                            return (
+                              <td key={r.key} style={{ textAlign: 'center', padding: '11px 8px', borderBottom: '1px solid var(--border)', borderLeft: '1px solid var(--border)', background: r.cellBg || 'transparent' }}>
+                                <span style={{ fontSize: 15, lineHeight: 1 }}>{allowed ? '✅' : '❌'}</span>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ padding: '10px 20px', borderTop: '1px solid var(--border)', background: '#FAFBFA', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon name="info" size={13} color="var(--text-muted)" />
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Los permisos se asignan por rol. Para modificar accesos contactá al administrador del sistema.</span>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── CREATE / EDIT MODAL ── */}
+      <Modal open={modal} onClose={() => setModal(false)} title={editing ? 'Editar usuario' : 'Nuevo usuario'}
+        footer={<>
+          <button className="btn btn-secondary" onClick={() => setModal(false)}>Cancelar</button>
+          <button className="btn btn-primary" onClick={save}>{editing ? 'Guardar cambios' : 'Crear usuario'}</button>
+        </>}>
+        {/* Avatar preview */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <Avatar initials={form.name ? initials(form.name) : '?'} size={56} bg={roleAvatarBg[form.role] || 'var(--accent)'} />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Nombre completo *</label>
+          <input className={`form-input ${errors.name ? 'input-error' : ''}`} value={form.name}
+            onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ej: Juan Pérez" />
+          {errors.name && <div className="form-error">{errors.name}</div>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Email *</label>
+          <input
+            className={`form-input ${errors.email ? 'input-error' : ''}`}
+            type="email"
+            value={form.email}
+            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+            placeholder="usuario@ejemplo.com"
+            disabled={!!editing}
+            style={editing ? { background: 'var(--bg)', borderColor: 'var(--border)', color: 'var(--text-secondary)', cursor: 'not-allowed' } : {}}
+          />
+          {errors.email && <div className="form-error">{errors.email}</div>}
+        </div>
+        
+        {editing && (
+          <div className="form-group" style={{ marginTop: 4, marginBottom: 16 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
+              <input
+                type="checkbox"
+                checked={generateNewPassword}
+                onChange={e => setGenerateNewPassword(e.target.checked)}
+                style={{
+                  width: 16,
+                  height: 16,
+                  accentColor: 'var(--accent)',
+                  cursor: 'pointer',
+                }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--dark)' }}>
+                Generar nueva contraseña y enviar por email
+              </span>
+            </label>
+            
+            {generateNewPassword && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 8,
+                padding: '10px 12px',
+                borderRadius: 'var(--radius)',
+                background: 'var(--accent-light)',
+                border: '1.5px solid var(--border-dark)',
+                color: 'var(--dark)',
+                marginTop: 10,
+              }}>
+                <Icon name="check" size={16} color="var(--accent)" style={{ marginTop: 2, flexShrink: 0 }} />
+                <span style={{ fontSize: 12, lineHeight: '1.4' }}>
+                  <strong>Nueva contraseña solicitada.</strong> Se generará de forma automática y se enviará al usuario al guardar los cambios.
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="form-row form-row-2">
+          <div className="form-group">
+            <label className="form-label">Rol</label>
+            <select className="form-input" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+              <option>Productor</option>
+              <option>Asesor</option>
+              <option>Admin</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Estado</label>
+            <select className="form-input" value={form.active ? 'activo' : 'inactivo'}
+              onChange={e => setForm(f => ({ ...f, active: e.target.value === 'activo' }))}>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
           </div>
         </div>
-      )}
+        {!editing && (
+          <div className="form-group">
+            <label className="form-label">Contraseña *</label>
+            <input className={`form-input ${errors.password ? 'input-error' : ''}`} type="password" value={form.password}
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="Mínimo 8 caracteres" />
+            {errors.password && <div className="form-error">{errors.password}</div>}
+          </div>
+        )}
+      </Modal>
+
+      {/* ── CONFIRM DELETE ── */}
+      <ConfirmDialog
+        open={!!confirmDel}
+        onClose={() => setConfirmDel(null)}
+        onConfirm={() => { setUsers(prev => prev.filter(u => u.id !== confirmDel)); setConfirmDel(null); }}
+        title="Eliminar usuario"
+        message="¿Estás seguro que querés eliminar este usuario? Esta acción no se puede deshacer."
+        confirmLabel="Eliminar"
+        danger
+      />
     </PageShell>
   );
 };
@@ -2010,6 +2450,6 @@ Object.assign(window, {
   OrdersScreen, AlertsScreen,
   HistoryPhenoScreen, HistorySanitaryScreen,
   CostsScreen, ReportsScreen,
-  AdvisorsScreen, PestsCatalogScreen,
+  AdvisorsScreen, PestsCatalogScreen, ProductsCatalogScreen,
   ProfileScreen, UsersScreen,
 });

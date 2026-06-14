@@ -81,9 +81,9 @@ const DATA = {
       equipment: 'Pulverizadora Case 4420 — 24m',
       visitId: 1,
       products: [
-        { id: 1, name: 'Fungicida triazol', dose: '0.5 L/ha', quantity: '60 L', cost: 45000 },
-        { id: 2, name: 'Estrobilurina', dose: '0.3 L/ha', quantity: '36 L', cost: 28000 },
-        { id: 3, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '24 L', cost: 8000 },
+        { id: 1, name: 'Fungicida triazol', dose: '0.5 L/ha', quantity: '60 L', price: 750, cost: 45000 },
+        { id: 2, name: 'Estrobilurina', dose: '0.3 L/ha', quantity: '36 L', price: 777.78, cost: 28000 },
+        { id: 3, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '24 L', price: 333.33, cost: 8000 },
       ],
     },
     {
@@ -92,8 +92,8 @@ const DATA = {
       equipment: 'Pulverizadora John Deere 4030 — 28m',
       visitId: 2,
       products: [
-        { id: 4, name: 'Clorpirifos', dose: '1 L/ha', quantity: '95 L', cost: 57000 },
-        { id: 5, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '19 L', cost: 6500 },
+        { id: 4, name: 'Clorpirifos', dose: '1 L/ha', quantity: '95 L', price: 600, cost: 57000 },
+        { id: 5, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '19 L', price: 342.1, cost: 6500 },
       ],
     },
     {
@@ -102,9 +102,18 @@ const DATA = {
       equipment: 'Pulverizadora Case 4420 — 24m',
       visitId: null,
       products: [
-        { id: 6, name: 'Glifosato', dose: '2 L/ha', quantity: '160 L', cost: 98000 },
+        { id: 6, name: 'Glifosato', dose: '2 L/ha', quantity: '160 L', price: 612.5, cost: 98000 },
       ],
     },
+  ],
+
+  products: [
+    { id: 1, name: 'Glifosato 48%', tipoProducto: 'Herbicida', descripcion: 'Herbicida de control general no selectivo', precioPorLitro: 1500 },
+    { id: 2, name: 'Atrazina 90%', tipoProducto: 'Herbicida', descripcion: 'Herbicida selectivo para maíz y sorgo', precioPorLitro: 2200 },
+    { id: 3, name: 'Tebuconazole 25%', tipoProducto: 'Fungicida', descripcion: 'Fungicida sistémico preventivo y curativo', precioPorLitro: 4500 },
+    { id: 4, name: 'Lambda-cialotrina 5%', tipoProducto: 'Insecticida', descripcion: 'Insecticida piretroide de amplio espectro', precioPorLitro: 3200 },
+    { id: 5, name: 'Superfosfato Simple', tipoProducto: 'Fertilizante', descripcion: 'Fertilizante fosfatado para siembra', precioPorLitro: 850 },
+    { id: 6, name: 'Bioestimulante Algas', tipoProducto: 'Bioestimulante', descripcion: 'Promotor de crecimiento fisiológico', precioPorLitro: 6800 }
   ],
 
   pests: [
@@ -209,6 +218,7 @@ const DATA = {
       { name: 'Órdenes de Aplicación', productor: 'view', asesor: 'edit', admin: true },
       { name: 'Alertas', productor: true, asesor: true, admin: true },
       { name: 'Catálogo Plagas', productor: false, asesor: 'view', admin: true },
+      { name: 'Catálogo Productos', productor: true, asesor: 'view', admin: true },
       { name: 'Costos Sanitarios', productor: true, asesor: false, admin: true },
       { name: 'Reportes', productor: true, asesor: true, admin: true },
       { name: 'Gestión Usuarios', productor: false, asesor: false, admin: true },

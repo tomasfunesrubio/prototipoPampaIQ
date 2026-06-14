@@ -61,6 +61,7 @@ const Sidebar = ({ active, onNav, userRole, alertCount }) => {
     { section: 'CONFIGURACIÓN' },
     { id: 'advisors', label: 'Mis Asesores', icon: 'advisor' },
     { id: 'pests_catalog', label: 'Catálogo Plagas', icon: 'pest' },
+    { id: 'products_catalog', label: 'Catálogo Productos', icon: 'spray' },
     { id: 'users', label: 'Usuarios y Permisos', icon: 'perm' },
     { id: 'profile', label: 'Mi Perfil', icon: 'profile' },
   ];
@@ -223,17 +224,61 @@ const StatusToggle = ({ value, onChange }) => (
 );
 
 // ── Inline Editable Product Row ───────────────────────────────────────────────
-const EditableProductRow = ({ product, onChange, onRemove }) => (
-  <tr className="editable-table-row">
-    <td><input className="form-input" style={{ padding: '5px 8px' }} value={product.name} onChange={e => onChange({ ...product, name: e.target.value })} placeholder="Producto..." /></td>
-    <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.dose} onChange={e => onChange({ ...product, dose: e.target.value })} placeholder="0 L/ha" /></td>
-    <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.quantity} onChange={e => onChange({ ...product, quantity: e.target.value })} placeholder="0 L" /></td>
-    <td><input type="number" min="0" className="form-input" style={{ padding: '5px 8px', width: 110 }} value={product.cost} onChange={e => onChange({ ...product, cost: e.target.value })} placeholder="0" /></td>
-    <td className="row-actions">
-      <button className="btn btn-ghost btn-icon btn-sm" onClick={onRemove} style={{ color: 'var(--critical)' }}><Icon name="trash" size={14} /></button>
-    </td>
-  </tr>
-);
+const EditableProductRow = ({ product, onChange, onRemove }) => {
+  const productsList = DATA.products || [];
+  const showCustomOption = product.name && !productsList.some(p => p.name === product.name);
+
+  const handleProductChange = (name) => {
+    const selectedProd = productsList.find(p => p.name === name);
+    const newPrice = selectedProd ? selectedProd.precioPorLitro : (product.price || 0);
+    const qty = parseFloat(product.quantity) || 0;
+    const cost = qty * newPrice;
+    onChange({
+      ...product,
+      name,
+      price: newPrice,
+      cost: cost
+    });
+  };
+
+  const handleQuantityChange = (quantity) => {
+    const qty = parseFloat(quantity) || 0;
+    const price = parseFloat(product.price !== undefined ? product.price : (product.cost / qty || 0)) || 0;
+    onChange({
+      ...product,
+      quantity,
+      cost: qty * price
+    });
+  };
+
+  const handlePriceChange = (priceVal) => {
+    const price = parseFloat(priceVal) || 0;
+    const qty = parseFloat(product.quantity) || 0;
+    onChange({
+      ...product,
+      price: priceVal,
+      cost: qty * price
+    });
+  };
+
+  return (
+    <tr className="editable-table-row">
+      <td>
+        <select className="form-input form-select" style={{ padding: '5px 8px' }} value={product.name} onChange={e => handleProductChange(e.target.value)}>
+          <option value="">Seleccionar producto...</option>
+          {showCustomOption && <option value={product.name}>{product.name}</option>}
+          {productsList.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+        </select>
+      </td>
+      <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.dose || ''} onChange={e => onChange({ ...product, dose: e.target.value })} placeholder="0.5 L/ha" /></td>
+      <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.quantity || ''} onChange={e => handleQuantityChange(e.target.value)} placeholder="0 L" /></td>
+      <td><input type="number" min="0" step="any" className="form-input" style={{ padding: '5px 8px', width: 110 }} value={product.price !== undefined ? product.price : (product.cost || '')} onChange={e => handlePriceChange(e.target.value)} placeholder="0" /></td>
+      <td className="row-actions">
+        <button className="btn btn-ghost btn-icon btn-sm" onClick={onRemove} style={{ color: 'var(--critical)' }}><Icon name="trash" size={14} /></button>
+      </td>
+    </tr>
+  );
+};
 
 // ── Pest Row ─────────────────────────────────────────────────────────────────
 const EditablePestRow = ({ pest, onChange, onRemove }) => {

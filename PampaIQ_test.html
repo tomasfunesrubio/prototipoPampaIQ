@@ -1077,9 +1077,9 @@ const DATA = {
       visitId: 1,
       transportCost: 8500, fuelLiters: 45, fuelPrice: 980, laborDays: 2, laborPrice: 15000, otherCost: 0,
       products: [
-        { id: 1, name: 'Fungicida triazol', dose: '0.5 L/ha', quantity: '60 L', cost: 45000 },
-        { id: 2, name: 'Estrobilurina', dose: '0.3 L/ha', quantity: '36 L', cost: 28000 },
-        { id: 3, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '24 L', cost: 8000 },
+        { id: 1, name: 'Fungicida triazol', dose: '0.5 L/ha', quantity: '60 L', price: 750, cost: 45000 },
+        { id: 2, name: 'Estrobilurina', dose: '0.3 L/ha', quantity: '36 L', price: 777.78, cost: 28000 },
+        { id: 3, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '24 L', price: 333.33, cost: 8000 },
       ],
     },
     {
@@ -1090,8 +1090,8 @@ const DATA = {
       visitId: 2,
       transportCost: 5000, fuelLiters: 30, fuelPrice: 980, laborDays: 1, laborPrice: 15000, otherCost: 0,
       products: [
-        { id: 4, name: 'Clorpirifos', dose: '1 L/ha', quantity: '95 L', cost: 57000 },
-        { id: 5, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '19 L', cost: 6500 },
+        { id: 4, name: 'Clorpirifos', dose: '1 L/ha', quantity: '95 L', price: 600, cost: 57000 },
+        { id: 5, name: 'Aceite mineral', dose: '0.2 L/ha', quantity: '19 L', price: 342.1, cost: 6500 },
       ],
     },
     {
@@ -1102,9 +1102,18 @@ const DATA = {
       visitId: null,
       transportCost: 0, fuelLiters: 0, fuelPrice: 0, laborDays: 0, laborPrice: 0, otherCost: 0,
       products: [
-        { id: 6, name: 'Glifosato', dose: '2 L/ha', quantity: '160 L', cost: 98000 },
+        { id: 6, name: 'Glifosato', dose: '2 L/ha', quantity: '160 L', price: 612.5, cost: 98000 },
       ],
     },
+  ],
+
+  products: [
+    { id: 1, name: 'Glifosato 48%', tipoProducto: 'Herbicida', descripcion: 'Herbicida de control general no selectivo', precioPorLitro: 1500 },
+    { id: 2, name: 'Atrazina 90%', tipoProducto: 'Herbicida', descripcion: 'Herbicida selectivo para maíz y sorgo', precioPorLitro: 2200 },
+    { id: 3, name: 'Tebuconazole 25%', tipoProducto: 'Fungicida', descripcion: 'Fungicida sistémico preventivo y curativo', precioPorLitro: 4500 },
+    { id: 4, name: 'Lambda-cialotrina 5%', tipoProducto: 'Insecticida', descripcion: 'Insecticida piretroide de amplio espectro', precioPorLitro: 3200 },
+    { id: 5, name: 'Superfosfato Simple', tipoProducto: 'Fertilizante', descripcion: 'Fertilizante fosfatado para siembra', precioPorLitro: 850 },
+    { id: 6, name: 'Bioestimulante Algas', tipoProducto: 'Bioestimulante', descripcion: 'Promotor de crecimiento fisiológico', precioPorLitro: 6800 }
   ],
 
   pests: [
@@ -1209,6 +1218,7 @@ const DATA = {
       { name: 'rdenes de Aplicacin', productor: 'view', asesor: 'edit', admin: true },
       { name: 'Alertas', productor: true, asesor: true, admin: true },
       { name: 'Catlogo Plagas', productor: false, asesor: 'view', admin: true },
+      { name: 'Catlogo Productos', productor: true, asesor: 'view', admin: true },
       { name: 'Costos Sanitarios', productor: true, asesor: false, admin: true },
       { name: 'Reportes', productor: true, asesor: true, admin: true },
       { name: 'Gestin Usuarios', productor: false, asesor: false, admin: true },
@@ -1323,6 +1333,7 @@ const Sidebar = ({ active, onNav, userRole, alertCount }) => {
     { section: 'CONFIGURACIN' },
     { id: 'advisors', label: 'Mis Asesores', icon: 'advisor' },
     { id: 'pests_catalog', label: 'Catlogo Plagas', icon: 'pest' },
+    { id: 'products_catalog', label: 'Catlogo Productos', icon: 'spray' },
     { id: 'users', label: 'Usuarios y Permisos', icon: 'perm' },
     { id: 'profile', label: 'Mi Perfil', icon: 'profile' },
   ];
@@ -1391,6 +1402,7 @@ const DRAWER_SECTIONS = [
   { label: 'Configuracin', items: [
     { id: 'advisors', label: 'Mis Asesores', icon: 'user' },
     { id: 'pests_catalog', label: 'Catlogo de Plagas', icon: 'pest' },
+    { id: 'products_catalog', label: 'Catlogo de Productos', icon: 'spray' },
     { id: 'profile', label: 'Perfil', icon: 'profile' },
     { id: 'login', label: 'Cerrar sesin', icon: 'logout' },
   ]},
@@ -1563,17 +1575,61 @@ const StatusToggle = ({ value, onChange }) => (
 );
 
 //  Inline Editable Product Row 
-const EditableProductRow = ({ product, onChange, onRemove }) => (
-  <tr className="editable-table-row">
-    <td><input className="form-input" style={{ padding: '5px 8px' }} value={product.name} onChange={e => onChange({ ...product, name: e.target.value })} placeholder="Producto..." /></td>
-    <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.dose} onChange={e => onChange({ ...product, dose: e.target.value })} placeholder="0 L/ha" /></td>
-    <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.quantity} onChange={e => onChange({ ...product, quantity: e.target.value })} placeholder="0 L" /></td>
-    <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} type="number" value={product.cost || ''} onChange={e => onChange({ ...product, cost: e.target.value })} placeholder="$ 0" /></td>
-    <td className="row-actions">
-      <button className="btn btn-ghost btn-icon btn-sm" onClick={onRemove} style={{ color: 'var(--critical)' }}><Icon name="trash" size={14} /></button>
-    </td>
-  </tr>
-);
+const EditableProductRow = ({ product, onChange, onRemove }) => {
+  const productsList = DATA.products || [];
+  const showCustomOption = product.name && !productsList.some(p => p.name === product.name);
+
+  const handleProductChange = (name) => {
+    const selectedProd = productsList.find(p => p.name === name);
+    const newPrice = selectedProd ? selectedProd.precioPorLitro : (product.price || 0);
+    const qty = parseFloat(product.quantity) || 0;
+    const cost = qty * newPrice;
+    onChange({
+      ...product,
+      name,
+      price: newPrice,
+      cost: cost
+    });
+  };
+
+  const handleQuantityChange = (quantity) => {
+    const qty = parseFloat(quantity) || 0;
+    const price = parseFloat(product.price !== undefined ? product.price : (product.cost / qty || 0)) || 0;
+    onChange({
+      ...product,
+      quantity,
+      cost: qty * price
+    });
+  };
+
+  const handlePriceChange = (priceVal) => {
+    const price = parseFloat(priceVal) || 0;
+    const qty = parseFloat(product.quantity) || 0;
+    onChange({
+      ...product,
+      price: priceVal,
+      cost: qty * price
+    });
+  };
+
+  return (
+    <tr className="editable-table-row">
+      <td>
+        <select className="form-input form-select" style={{ padding: '5px 8px' }} value={product.name} onChange={e => handleProductChange(e.target.value)}>
+          <option value="">Seleccionar producto...</option>
+          {showCustomOption && <option value={product.name}>{product.name}</option>}
+          {productsList.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+        </select>
+      </td>
+      <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.dose || ''} onChange={e => onChange({ ...product, dose: e.target.value })} placeholder="0.5 L/ha" /></td>
+      <td><input className="form-input" style={{ padding: '5px 8px', width: 90 }} value={product.quantity || ''} onChange={e => handleQuantityChange(e.target.value)} placeholder="0 L" /></td>
+      <td><input type="number" min="0" step="any" className="form-input" style={{ padding: '5px 8px', width: 110 }} value={product.price !== undefined ? product.price : (product.cost || '')} onChange={e => handlePriceChange(e.target.value)} placeholder="0" /></td>
+      <td className="row-actions">
+        <button className="btn btn-ghost btn-icon btn-sm" onClick={onRemove} style={{ color: 'var(--critical)' }}><Icon name="trash" size={14} /></button>
+      </td>
+    </tr>
+  );
+};
 
 //  Pest Row 
 const EditablePestRow = ({ pest, onChange, onRemove }) => {
@@ -3357,7 +3413,7 @@ const OrdersScreen = () => {
   const [editing, setEditing] = useState(null);
   
   const defaultForm = {
-    lotId: '', date: '', appType: ' Mosquito / Pulverizadora terrestre', equipment: '', products: [{ id: 1, name: '', dose: '', quantity: '', cost: '' }],
+    lotId: '', date: '', appType: ' Mosquito / Pulverizadora terrestre', equipment: '', products: [{ id: 1, name: '', dose: '', quantity: '', price: '', cost: '' }],
     transportCost: '', fuelLiters: '', fuelPrice: '', laborDays: '', laborPrice: '', otherCost: '', otherDesc: ''
   };
   
@@ -3374,14 +3430,18 @@ const OrdersScreen = () => {
   };
   const openEdit = (o) => {
     setEditing(o);
+    const mappedProducts = o.products.map(p => {
+      const price = p.price !== undefined ? p.price : (p.cost / (parseFloat(p.quantity) || 1) || 0);
+      return { ...p, price };
+    });
     setForm({ 
-      lotId: o.lotId, date: o.date, appType: o.appType || ' Mosquito / Pulverizadora terrestre', equipment: o.equipment, products: [...o.products],
+      lotId: o.lotId, date: o.date, appType: o.appType || ' Mosquito / Pulverizadora terrestre', equipment: o.equipment, products: mappedProducts,
       transportCost: o.transportCost || '', fuelLiters: o.fuelLiters || '', fuelPrice: o.fuelPrice || '', 
       laborDays: o.laborDays || '', laborPrice: o.laborPrice || '', otherCost: o.otherCost || '', otherDesc: o.otherDesc || ''
     });
     setModal(true);
   };
-  const addProduct = () => setForm({ ...form, products: [...form.products, { id: Date.now(), name: '', dose: '', quantity: '', cost: '' }] });
+  const addProduct = () => setForm({ ...form, products: [...form.products, { id: Date.now(), name: '', dose: '', quantity: '', price: '', cost: '' }] });
   const updateProduct = (idx, p) => setForm({ ...form, products: form.products.map((pp, i) => i === idx ? p : pp) });
   const removeProduct = (idx) => setForm({ ...form, products: form.products.filter((_, i) => i !== idx) });
   
@@ -3478,16 +3538,20 @@ const OrdersScreen = () => {
           <div className="card-header"><div className="card-title"> Productos a aplicar</div></div>
           <div className="table-wrap" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
             <table>
-              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad total</th><th>Costo estimado</th></tr></thead>
+              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad total</th><th>Precio por litro</th><th>Costo total</th></tr></thead>
               <tbody>
-                {selected.products.map(p => (
-                  <tr key={p.id}>
-                    <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{p.name}</td>
-                    <td className="td-mono">{p.dose}</td>
-                    <td className="td-mono">{p.quantity}</td>
-                    <td className="td-mono">{fmt.currency(p.cost || 0)}</td>
-                  </tr>
-                ))}
+                {selected.products.map(p => {
+                  const price = p.price !== undefined ? p.price : (p.cost / (parseFloat(p.quantity) || 1) || 0);
+                  return (
+                    <tr key={p.id}>
+                      <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{p.name}</td>
+                      <td className="td-mono">{p.dose}</td>
+                      <td className="td-mono">{p.quantity}</td>
+                      <td className="td-mono">{fmt.currency(price)}</td>
+                      <td className="td-mono">{fmt.currency(p.cost || 0)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -3628,7 +3692,7 @@ const OrdersScreen = () => {
           </div>
           <div className="table-wrap">
             <table>
-              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad</th><th>Precio est.</th><th></th></tr></thead>
+              <thead><tr><th>Producto</th><th>Dosis</th><th>Cantidad</th><th>Precio por litro</th><th></th></tr></thead>
               <tbody>
                 {form.products.map((p, i) => <EditableProductRow key={p.id} product={p} onChange={pp => updateProduct(i, pp)} onRemove={() => removeProduct(i)} />)}
               </tbody>
@@ -4966,6 +5030,110 @@ const PestsCatalogScreen = () => {
   );
 };
 
+// ══════════════════════════════════════════════════════════════════════════════
+// PRODUCTS CATALOG
+// ══════════════════════════════════════════════════════════════════════════════
+const ProductsCatalogScreen = () => {
+  const [products, setProducts] = useState(DATA.products || []);
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ name: '', tipoProducto: '', descripcion: '', precioPorLitro: '' });
+  const [errors, setErrors] = useState({});
+  const [confirmDel, setConfirmDel] = useState(null);
+
+  const productTypes = ['Herbicida', 'Fungicida', 'Insecticida', 'Fertilizante', 'Bioestimulante', 'Otro'];
+
+  const openCreate = () => { setEditing(null); setForm({ name: '', tipoProducto: '', descripcion: '', precioPorLitro: '' }); setErrors({}); setModal(true); };
+  const openEdit = (p) => { setEditing(p); setForm({ name: p.name, tipoProducto: p.tipoProducto, descripcion: p.descripcion || '', precioPorLitro: String(p.precioPorLitro) }); setErrors({}); setModal(true); };
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'El nombre es obligatorio';
+    if (!form.tipoProducto) e.tipoProducto = 'El tipo de producto es obligatorio';
+    if (!form.precioPorLitro || Number(form.precioPorLitro) <= 0) e.precioPorLitro = 'El precio por litro debe ser mayor a 0';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const save = () => {
+    if (!validate()) return;
+    const cleanForm = { ...form, precioPorLitro: Number(form.precioPorLitro) };
+    let nextProducts;
+    if (editing) {
+      nextProducts = products.map(p => p.id === editing.id ? { ...p, ...cleanForm } : p);
+    } else {
+      nextProducts = [...products, { id: Date.now(), ...cleanForm }];
+    }
+    setProducts(nextProducts);
+    DATA.products = nextProducts; // Sync back to global DATA
+    setModal(false);
+  };
+
+  const del = (id) => {
+    const nextProducts = products.filter(p => p.id !== id);
+    setProducts(nextProducts);
+    DATA.products = nextProducts; // Sync back to global DATA
+    setConfirmDel(null);
+  };
+
+  return (
+    <PageShell breadcrumbs={['Catlogo de Productos']} actions={<button className="btn btn-primary" onClick={openCreate}><Icon name="plus" size={14} color="#fff" /> Nuevo producto</button>}>
+      <div className="page-header">
+        <div><div className="page-title">Catlogo de Productos</div><div className="page-subtitle">{products.length} productos registrados</div></div>
+      </div>
+      <div className="table-wrap">
+        <table>
+          <thead><tr><th>Nombre</th><th>Tipo</th><th>Descripcin</th><th>Precio por litro</th><th>Acciones</th></tr></thead>
+          <tbody>
+            {products.map(p => (
+              <tr key={p.id}>
+                <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>🧪 {p.name}</td>
+                <td><span className="badge badge-info">{p.tipoProducto}</span></td>
+                <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{p.descripcion || '—'}</td>
+                <td className="td-mono">{fmt.currency(p.precioPorLitro)}</td>
+                <td>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    <button className="btn btn-ghost btn-icon btn-sm" onClick={() => openEdit(p)}><Icon name="edit" size={14} /></button>
+                    <button className="btn btn-ghost btn-icon btn-sm" style={{ color: 'var(--critical)' }} onClick={() => setConfirmDel(p.id)}><Icon name="trash" size={14} /></button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Modal open={modal} onClose={() => setModal(false)} title={editing ? 'Editar producto' : 'Nuevo producto'}
+        footer={<><button className="btn btn-secondary" onClick={() => setModal(false)}>Cancelar</button><button className="btn btn-primary" onClick={save}>Guardar</button></>}>
+        <div className="form-group">
+          <label className="form-label">Nombre del producto *</label>
+          <input className={`form-input ${errors.name ? 'error' : ''}`} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Ej. Glifosato 48%" />
+          {errors.name && <span className="form-error">⚠ {errors.name}</span>}
+        </div>
+        <div className="form-row form-row-2">
+          <div className="form-group">
+            <label className="form-label">Tipo de producto *</label>
+            <select className={`form-input form-select ${errors.tipoProducto ? 'error' : ''}`} value={form.tipoProducto} onChange={e => setForm({ ...form, tipoProducto: e.target.value })}>
+              <option value="">Seleccionar...</option>
+              {productTypes.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            {errors.tipoProducto && <span className="form-error">⚠ {errors.tipoProducto}</span>}
+          </div>
+          <div className="form-group">
+            <label className="form-label">Precio por litro ($) *</label>
+            <input type="number" min="0" step="any" className={`form-input ${errors.precioPorLitro ? 'error' : ''}`} value={form.precioPorLitro} onChange={e => setForm({ ...form, precioPorLitro: e.target.value })} placeholder="Ej. 1500" />
+            {errors.precioPorLitro && <span className="form-error">⚠ {errors.precioPorLitro}</span>}
+          </div>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Descripcin</label>
+          <textarea className="form-input" style={{ minHeight: 80, resize: 'vertical' }} value={form.descripcion} onChange={e => setForm({ ...form, descripcion: e.target.value })} placeholder="Opcional..." />
+        </div>
+      </Modal>
+      <ConfirmDialog open={!!confirmDel} onClose={() => setConfirmDel(null)} onConfirm={() => del(confirmDel)} title="Eliminar producto" message="¿Ests seguro que quers eliminar este producto? Esta accin no se puede deshacer." confirmLabel="Eliminar" danger />
+    </PageShell>
+  );
+};
+
 
 // 
 // PROFILE
@@ -5056,17 +5224,32 @@ const UsersScreen = () => {
   const [form, setForm] = useState({ name: '', email: '', role: 'Asesor', active: true, password: '' });
   const [errors, setErrors] = useState({});
   const [confirmDel, setConfirmDel] = useState(null);
+  const [generateNewPassword, setGenerateNewPassword] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const { modules, roles } = DATA.permissions;
 
-  const openCreate = () => { setEditing(null); setForm({ name: '', email: '', role: 'Asesor', active: true, password: '' }); setErrors({}); setModal(true); };
-  const openEdit = (u) => { setEditing(u); setForm({ name: u.name, email: u.email, role: u.role, active: u.active, password: '' }); setErrors({}); setModal(true); };
+  const openCreate = () => {
+    setEditing(null);
+    setForm({ name: '', email: '', role: 'Asesor', active: true, password: '' });
+    setGenerateNewPassword(false);
+    setErrors({});
+    setModal(true);
+  };
+
+  const openEdit = (u) => {
+    setEditing(u);
+    setForm({ name: u.name, email: u.email, role: u.role, active: u.active, password: '' });
+    setGenerateNewPassword(false);
+    setErrors({});
+    setModal(true);
+  };
 
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = 'El nombre es obligatorio';
     if (!form.email.trim()) e.email = 'El email es obligatorio';
-    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Email invlido';
-    if (!editing && !form.password) e.password = 'La contrasea inicial es obligatoria';
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Email inválido';
+    if (!editing && !form.password) e.password = 'La contraseña inicial es obligatoria';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -5074,7 +5257,13 @@ const UsersScreen = () => {
   const save = () => {
     if (!validate()) return;
     if (editing) {
-      setUsers(users.map(u => u.id === editing.id ? { ...u, name: form.name, email: form.email, role: form.role, active: form.active } : u));
+      let newPassword = null;
+      if (generateNewPassword) {
+        newPassword = 'Pampa-' + Math.floor(1000 + Math.random() * 9000);
+        console.log(`[SIMULACIÓN DE ENVÍO DE EMAIL] Se envió una nueva contraseña al usuario ${form.email}. Contraseña: ${newPassword}`);
+        setAlertMessage(`Se generó la contraseña "${newPassword}" y se simuló el envío del email a ${form.email}`);
+      }
+      setUsers(users.map(u => u.id === editing.id ? { ...u, name: form.name, email: form.email, role: form.role, active: form.active, ...(newPassword ? { password: newPassword } : {}) } : u));
     } else {
       setUsers([...users, { id: Date.now(), name: form.name, email: form.email, role: form.role, active: form.active }]);
     }
@@ -5085,11 +5274,36 @@ const UsersScreen = () => {
   const roleAvatarBg = { Admin: 'var(--dark)', Asesor: '#6366F1', Productor: 'var(--accent)' };
 
   return (
-    <PageShell breadcrumbs={['Gestin de Usuarios y Permisos']}>
+    <PageShell breadcrumbs={['Gestión de Usuarios y Permisos']}>
       <div className="page-header">
-        <div><div className="page-title">Usuarios y Permisos</div><div className="page-subtitle">Administracin de accesos al sistema</div></div>
+        <div><div className="page-title">Usuarios y Permisos</div><div className="page-subtitle">Administración de accesos al sistema</div></div>
         <button className="btn btn-primary" onClick={openCreate}><Icon name="plus" size={14} color="#fff" /> Nuevo usuario</button>
       </div>
+
+      {/* Alert message banner */}
+      {alertMessage && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          padding: '12px 16px',
+          borderRadius: 'var(--radius-lg)',
+          background: 'var(--success-light)',
+          border: '1.5px solid var(--border-dark)',
+          color: 'var(--success)',
+          marginBottom: 20,
+          boxShadow: 'var(--shadow-sm)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Icon name="check" size={16} color="var(--success)" />
+            <span style={{ fontSize: 13, fontWeight: 600 }}>{alertMessage}</span>
+          </div>
+          <button onClick={() => setAlertMessage('')} style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', padding: 2, cursor: 'pointer' }}>
+            <Icon name="x" size={14} />
+          </button>
+        </div>
+      )}
 
       <div className="tabs">
         <div className={`tab ${tab === 'users' ? 'active' : ''}`} onClick={() => setTab('users')}>Usuarios <span style={{ marginLeft: 4, background: 'var(--border)', color: 'var(--text-secondary)', fontSize: 10, padding: '1px 6px', borderRadius: 10, fontFamily: 'var(--font-mono)' }}>{users.length}</span></div>
@@ -5136,7 +5350,7 @@ const UsersScreen = () => {
           <table className="perm-table">
             <thead>
               <tr>
-                <th>Mdulo</th>
+                <th>Módulo</th>
                 {roles.map(r => <th key={r}>{r}</th>)}
               </tr>
             </thead>
@@ -5149,9 +5363,9 @@ const UsersScreen = () => {
                     const val = m[rKey];
                     return (
                       <td key={r} className="perm-check">
-                        {val === true && <span className="perm-icon" title="Acceso completo"></span>}
-                        {val === 'edit' && <span className="perm-icon" title="Lectura y edicin"></span>}
-                        {val === 'view' && <span className="perm-icon" title="Solo lectura"></span>}
+                        {val === true && <span className="perm-icon" title="Acceso completo">✅</span>}
+                        {val === 'edit' && <span className="perm-icon" title="Lectura y edición">✏️</span>}
+                        {val === 'view' && <span className="perm-icon" title="Solo lectura">👁️</span>}
                         {val === false && <span className="perm-icon" title="Sin acceso"><Icon name="lock" size={14} color="var(--text-muted)" /></span>}
                       </td>
                     );
@@ -5161,9 +5375,9 @@ const UsersScreen = () => {
             </tbody>
           </table>
           <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)', display: 'flex', gap: 16, fontSize: 12, color: 'var(--text-secondary)' }}>
-            <span> Acceso completo</span>
-            <span> Lectura y edicin</span>
-            <span> Solo lectura</span>
+            <span>✅ Acceso completo</span>
+            <span>✏️ Lectura y edición</span>
+            <span>👁️ Solo lectura</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="lock" size={12} color="var(--text-muted)" /> Sin acceso</span>
           </div>
         </div>
@@ -5196,9 +5410,58 @@ const UsersScreen = () => {
           </div>
           <div className="form-group" style={{ gridColumn: '1/-1' }}>
             <label className="form-label">Email *</label>
-            <input type="email" className={`form-input ${errors.email ? 'error' : ''}`} value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="usuario@email.com" />
+            <input
+              type="email"
+              className={`form-input ${errors.email ? 'error' : ''}`}
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              placeholder="usuario@email.com"
+              disabled={!!editing}
+              style={editing ? { background: 'var(--bg)', borderColor: 'var(--border)', color: 'var(--text-secondary)', cursor: 'not-allowed' } : {}}
+            />
             {errors.email && <span className="form-error"> {errors.email}</span>}
           </div>
+          
+          {editing && (
+            <div className="form-group" style={{ gridColumn: '1/-1', marginTop: 4, marginBottom: 16 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
+                <input
+                  type="checkbox"
+                  checked={generateNewPassword}
+                  onChange={e => setGenerateNewPassword(e.target.checked)}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    accentColor: 'var(--accent)',
+                    cursor: 'pointer',
+                  }}
+                />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--dark)' }}>
+                  Generar nueva contraseña y enviar por email
+                </span>
+              </label>
+              
+              {generateNewPassword && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  padding: '10px 12px',
+                  borderRadius: 'var(--radius)',
+                  background: 'var(--accent-light)',
+                  border: '1.5px solid var(--border-dark)',
+                  color: 'var(--dark)',
+                  marginTop: 10,
+                }}>
+                  <Icon name="check" size={16} color="var(--accent)" style={{ marginTop: 2, flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, lineHeight: '1.4' }}>
+                    <strong>Nueva contraseña solicitada.</strong> Se generará de forma automática y se enviará al usuario al guardar los cambios.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="form-group">
             <label className="form-label">Rol</label>
             <select className="form-input form-select" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
@@ -5213,17 +5476,28 @@ const UsersScreen = () => {
           </div>
         </div>
 
-        <div className="form-group">
-          <label className="form-label">{editing ? 'Nueva contrasea (dejar vaco para no cambiar)' : 'Contrasea inicial *'}</label>
-          <input type="password" className={`form-input ${errors.password ? 'error' : ''}`} value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="Mnimo 8 caracteres" />
-          {errors.password && <span className="form-error"> {errors.password}</span>}
-        </div>
+        {!editing && (
+          <div className="form-group">
+            <label className="form-label">Contraseña inicial *</label>
+            <input type="password" className={`form-input ${errors.password ? 'error' : ''}`} value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="Mínimo 8 caracteres" />
+            {errors.password && <span className="form-error"> {errors.password}</span>}
+          </div>
+        )}
 
         <div className="info-box">
           <Icon name="info" size={14} color="var(--accent)" />
-          <span>El usuario recibir sus credenciales por email y podr cambiar su contrasea desde su perfil.</span>
+          <span>El usuario recibirá sus credenciales por email y podrá cambiar su contraseña desde su perfil.</span>
         </div>
       </Modal>
+
+      <ConfirmDialog open={!!confirmDel} onClose={() => setConfirmDel(null)}
+        onConfirm={() => { setUsers(users.filter(u => u.id !== confirmDel)); setConfirmDel(null); }}
+        title="Eliminar usuario"
+        message="Estás seguro que querés eliminar este usuario? Perder el acceso al sistema de forma inmediata."
+        confirmLabel="Eliminar usuario" danger />
+    </PageShell>
+  );
+};
 
       <ConfirmDialog open={!!confirmDel} onClose={() => setConfirmDel(null)}
         onConfirm={() => { setUsers(users.filter(u => u.id !== confirmDel)); setConfirmDel(null); }}
@@ -5242,7 +5516,7 @@ Object.assign(window, {
   PhenologicalAnalysisScreen, SanitaryEvolutionScreen,
   CampaignDetailScreen,
   CostsScreen, ReportsScreen,
-  AdvisorsScreen, PestsCatalogScreen,
+  AdvisorsScreen, PestsCatalogScreen, ProductsCatalogScreen,
   ProfileScreen, UsersScreen,
 });
 
@@ -5363,6 +5637,7 @@ const App = () => {
       case 'reports': return <ReportsScreen />;
       case 'advisors': return <AdvisorsScreen />;
       case 'pests_catalog': return <PestsCatalogScreen />;
+      case 'products_catalog': return <ProductsCatalogScreen />;
       case 'profile': return <ProfileScreen />;
       case 'users': return <UsersScreen />;
       default: return <DashboardScreen onNav={handleNav} />;
@@ -5949,14 +6224,18 @@ const MobileScreenWrapper = ({ screen, onNav, alertCount, navData }) => {
           <div className="m-card" style={{ marginBottom: 12 }}>
             <div className="m-card-header"><div className="m-card-title"> Productos a aplicar</div></div>
             <div className="m-card-body">
-              {o.products.map((p, i) => (
-                <div key={i} style={{ paddingBottom: i < o.products.length-1 ? 10 : 0, marginBottom: i < o.products.length-1 ? 10 : 0, borderBottom: i < o.products.length-1 ? '1px solid var(--border)' : 'none' }}>
-                  <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{p.name || ''}</div>
-                  {p.dose && <div className="m-field-row"><span className="m-field-label">Dosis</span><span className="m-field-value td-mono">{p.dose}</span></div>}
-                  {p.quantity && <div className="m-field-row"><span className="m-field-label">Cantidad</span><span className="m-field-value td-mono">{p.quantity}</span></div>}
-                  {p.cost && <div className="m-field-row"><span className="m-field-label">Costo</span><span className="m-field-value td-mono">{fmt.currency(Number(p.cost))}</span></div>}
-                </div>
-              ))}
+              {o.products.map((p, i) => {
+                const price = p.price !== undefined ? p.price : (p.cost / (parseFloat(p.quantity) || 1) || 0);
+                return (
+                  <div key={i} style={{ paddingBottom: i < o.products.length-1 ? 10 : 0, marginBottom: i < o.products.length-1 ? 10 : 0, borderBottom: i < o.products.length-1 ? '1px solid var(--border)' : 'none' }}>
+                    <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{p.name || ''}</div>
+                    {p.dose && <div className="m-field-row"><span className="m-field-label">Dosis</span><span className="m-field-value td-mono">{p.dose}</span></div>}
+                    {p.quantity && <div className="m-field-row"><span className="m-field-label">Cantidad</span><span className="m-field-value td-mono">{p.quantity}</span></div>}
+                    <div className="m-field-row"><span className="m-field-label">Precio por litro</span><span className="m-field-value td-mono">{fmt.currency(price)}</span></div>
+                    {p.cost && <div className="m-field-row"><span className="m-field-label">Costo total</span><span className="m-field-value td-mono">{fmt.currency(Number(p.cost))}</span></div>}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -6007,20 +6286,69 @@ const MobileScreenWrapper = ({ screen, onNav, alertCount, navData }) => {
             </div>
 
             <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, color: 'var(--dark)', marginBottom: 10, marginTop: 4 }}>Productos a aplicar</div>
-            {mOrderForm.products.map((p, i) => (
-              <div key={p.id} className="m-card" style={{ marginBottom: 10 }}>
-                <div className="m-card-body">
-                  <div className="form-group"><label className="form-label">Producto</label><input className="form-input" style={{ height: 44 }} value={p.name} onChange={e => updateProduct(i, { ...p, name: e.target.value })} placeholder="Ej. Glifosato" /></div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    <div className="form-group"><label className="form-label">Dosis</label><input className="form-input" style={{ height: 44 }} value={p.dose} onChange={e => updateProduct(i, { ...p, dose: e.target.value })} placeholder="L/ha" /></div>
-                    <div className="form-group"><label className="form-label">Cantidad</label><input className="form-input" style={{ height: 44 }} value={p.quantity} onChange={e => updateProduct(i, { ...p, quantity: e.target.value })} placeholder="L total" /></div>
+            {mOrderForm.products.map((p, i) => {
+              const productsList = DATA.products || [];
+              const showCustomOption = p.name && !productsList.some(prod => prod.name === p.name);
+
+              const handleMProductChange = (name) => {
+                const selectedProd = productsList.find(prod => prod.name === name);
+                const newPrice = selectedProd ? selectedProd.precioPorLitro : (p.price || 0);
+                const qty = parseFloat(p.quantity) || 0;
+                const cost = qty * newPrice;
+                updateProduct(i, {
+                  ...p,
+                  name,
+                  price: newPrice,
+                  cost
+                });
+              };
+
+              const handleMQuantityChange = (quantity) => {
+                const qty = parseFloat(quantity) || 0;
+                const price = parseFloat(p.price !== undefined ? p.price : (p.cost / qty || 0)) || 0;
+                updateProduct(i, {
+                  ...p,
+                  quantity,
+                  cost: qty * price
+                });
+              };
+
+              const handleMPriceChange = (priceVal) => {
+                const price = parseFloat(priceVal) || 0;
+                const qty = parseFloat(p.quantity) || 0;
+                updateProduct(i, {
+                  ...p,
+                  price: priceVal,
+                  cost: qty * price
+                });
+              };
+
+              return (
+                <div key={p.id} className="m-card" style={{ marginBottom: 10 }}>
+                  <div className="m-card-body">
+                    <div className="form-group">
+                      <label className="form-label">Producto</label>
+                      <select className="form-input form-select" style={{ height: 44 }} value={p.name} onChange={e => handleMProductChange(e.target.value)}>
+                        <option value="">Seleccionar producto...</option>
+                        {showCustomOption && <option value={p.name}>{p.name}</option>}
+                        {productsList.map(prod => <option key={prod.id} value={prod.name}>{prod.name}</option>)}
+                      </select>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      <div className="form-group"><label className="form-label">Dosis</label><input className="form-input" style={{ height: 44 }} value={p.dose || ''} onChange={e => updateProduct(i, { ...p, dose: e.target.value })} placeholder="L/ha" /></div>
+                      <div className="form-group"><label className="form-label">Cantidad</label><input className="form-input" style={{ height: 44 }} value={p.quantity || ''} onChange={e => handleMQuantityChange(e.target.value)} placeholder="L total" /></div>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">Precio por litro ($)</label>
+                      <input type="number" min="0" step="any" className="form-input" style={{ height: 44 }} value={p.price !== undefined ? p.price : (p.cost || '')} onChange={e => handleMPriceChange(e.target.value)} placeholder="0" />
+                    </div>
+                    {mOrderForm.products.length > 1 && (
+                      <button onClick={() => removeProduct(i)} style={{ color: 'var(--critical)', background: 'none', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-head)', display: 'flex', alignItems: 'center', gap: 4, marginTop: 8 }}><Icon name="trash" size={13} color="var(--critical)" /> Eliminar</button>
+                    )}
                   </div>
-                  {mOrderForm.products.length > 1 && (
-                    <button onClick={() => removeProduct(i)} style={{ color: 'var(--critical)', background: 'none', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-head)', display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="trash" size={13} color="var(--critical)" /> Eliminar</button>
-                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <button onClick={addProduct} className="btn btn-secondary" style={{ width: '100%', height: 48, justifyContent: 'center', marginBottom: 16 }}>
               <Icon name="plus" size={14} /> Agregar producto
             </button>
@@ -6298,6 +6626,167 @@ const MobileScreenWrapper = ({ screen, onNav, alertCount, navData }) => {
     );
   }
 
+  // Mobile Products Catalog
+  if (screen === 'products_catalog') {
+    const [mProducts, setMProducts] = React.useState(DATA.products || []);
+    const [mProductModal, setMProductModal] = React.useState(false);
+    const [mProductEditing, setMProductEditing] = React.useState(null);
+    const [mProductForm, setMProductForm] = React.useState({ name: '', tipoProducto: '', descripcion: '', precioPorLitro: '' });
+    const [mProductErrors, setMProductErrors] = React.useState({});
+    const [mProductConfirmDel, setMProductConfirmDel] = React.useState(null);
+
+    const mProductTypes = ['Herbicida', 'Fungicida', 'Insecticida', 'Fertilizante', 'Bioestimulante', 'Otro'];
+
+    const mProductOpenCreate = () => {
+      setMProductEditing(null);
+      setMProductForm({ name: '', tipoProducto: '', descripcion: '', precioPorLitro: '' });
+      setMProductErrors({});
+      setMProductModal(true);
+    };
+    const mProductOpenEdit = (p) => {
+      setMProductEditing(p);
+      setMProductForm({ name: p.name, tipoProducto: p.tipoProducto, descripcion: p.descripcion || '', precioPorLitro: String(p.precioPorLitro) });
+      setMProductErrors({});
+      setMProductModal(true);
+    };
+    const mProductValidate = () => {
+      const e = {};
+      if (!mProductForm.name.trim()) e.name = 'El nombre es obligatorio';
+      if (!mProductForm.tipoProducto) e.tipoProducto = 'El tipo de producto es obligatorio';
+      if (!mProductForm.precioPorLitro || Number(mProductForm.precioPorLitro) <= 0) e.precioPorLitro = 'El precio por litro debe ser mayor a 0';
+      setMProductErrors(e);
+      return Object.keys(e).length === 0;
+    };
+    const mProductSave = () => {
+      if (!mProductValidate()) return;
+      const cleanForm = { ...mProductForm, precioPorLitro: Number(mProductForm.precioPorLitro) };
+      let nextProducts;
+      if (mProductEditing) {
+        nextProducts = mProducts.map(p => p.id === mProductEditing.id ? { ...p, ...cleanForm } : p);
+      } else {
+        nextProducts = [...mProducts, { id: Date.now(), ...cleanForm }];
+      }
+      setMProducts(nextProducts);
+      DATA.products = nextProducts; // Sync back to global DATA
+      setMProductModal(false);
+    };
+
+    const mProductDel = (id) => {
+      const nextProducts = mProducts.filter(p => p.id !== id);
+      setMProducts(nextProducts);
+      DATA.products = nextProducts; // Sync back to global DATA
+      setMProductConfirmDel(null);
+    };
+
+    // Confirm-delete overlay
+    if (mProductConfirmDel !== null) {
+      const prod = mProducts.find(p => p.id === mProductConfirmDel);
+      return (
+        <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <div style={{ fontSize: 40 }}>🗑️</div>
+          <div style={{ fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 17, color: 'var(--dark)', textAlign: 'center' }}>Eliminar producto</div>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.6 }}>
+            ¿Eliminar <strong>{prod?.name}</strong>? Esta acción no se puede deshacer.
+          </p>
+          <button onClick={() => mProductDel(mProductConfirmDel)}
+            style={{ width: '100%', height: 52, background: '#DC2626', color: '#fff', border: 'none', borderRadius: 12, fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}>
+            Eliminar
+          </button>
+          <button onClick={() => setMProductConfirmDel(null)}
+            style={{ width: '100%', height: 48, background: 'transparent', border: '1.5px solid var(--border)', borderRadius: 12, fontFamily: 'var(--font-head)', fontWeight: 600, fontSize: 14, cursor: 'pointer', color: 'var(--text-secondary)' }}>
+            Cancelar
+          </button>
+        </div>
+      );
+    }
+
+    // Edit / create modal
+    if (mProductModal) {
+      return (
+        <div style={{ position: 'absolute', inset: 0, background: 'var(--bg)', zIndex: 50, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--nav-bg)', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+            <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 15, color: '#fff' }}>{mProductEditing ? 'Editar producto' : 'Nuevo producto'}</div>
+            <button onClick={() => setMProductModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+          </div>
+          <div style={{ flex: 1, overflow: 'auto', padding: '16px 16px 0' }}>
+            <div className="form-group">
+              <label className="form-label">Nombre del producto *</label>
+              <input className={`form-input ${mProductErrors.name ? 'error' : ''}`} style={{ height: 48 }} value={mProductForm.name} onChange={e => setMProductForm(f => ({ ...f, name: e.target.value }))} placeholder="Ej. Glifosato 48%" />
+              {mProductErrors.name && <span className="form-error">⚠ {mProductErrors.name}</span>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Tipo de producto *</label>
+              <select className={`form-input form-select ${mProductErrors.tipoProducto ? 'error' : ''}`} style={{ height: 48 }} value={mProductForm.tipoProducto} onChange={e => setMProductForm(f => ({ ...f, tipoProducto: e.target.value }))}>
+                <option value="">Seleccionar...</option>
+                {mProductTypes.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+              {mProductErrors.tipoProducto && <span className="form-error">⚠ {mProductErrors.tipoProducto}</span>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Precio por litro ($) *</label>
+              <input type="number" min="0" step="any" className={`form-input ${mProductErrors.precioPorLitro ? 'error' : ''}`} style={{ height: 48 }} value={mProductForm.precioPorLitro} onChange={e => setMProductForm(f => ({ ...f, precioPorLitro: e.target.value }))} placeholder="Ej. 1500" />
+              {mProductErrors.precioPorLitro && <span className="form-error">⚠ {mProductErrors.precioPorLitro}</span>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Descripción</label>
+              <textarea className="form-input" style={{ minHeight: 80, resize: 'vertical' }} value={mProductForm.descripcion} onChange={e => setMProductForm(f => ({ ...f, descripcion: e.target.value }))} placeholder="Opcional..." />
+            </div>
+          </div>
+          <div style={{ padding: '14px 16px', borderTop: '1px solid var(--border)', display: 'flex', gap: 10, flexShrink: 0, background: '#fff' }}>
+            <button onClick={() => setMProductModal(false)} style={{ flex: 1, height: 52, background: '#fff', border: '1.5px solid var(--border)', borderRadius: 12, fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
+            <button onClick={mProductSave} style={{ flex: 2, height: 52, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 12, fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>✓ Guardar</button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ padding: '14px 14px 20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 18, color: 'var(--dark)' }}>Catálogo de Productos</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{mProducts.length} productos registrados</div>
+          </div>
+          <button className="btn btn-primary btn-sm" style={{ height: 44, padding: '0 16px' }} onClick={mProductOpenCreate}><Icon name="plus" size={13} color="#fff" /> Nuevo</button>
+        </div>
+
+        {mProducts.map(p => (
+          <div key={p.id} className="m-card" style={{ marginBottom: 10 }}>
+            <div className="m-card-header">
+              <div>
+                <div className="m-card-title">🧪 {p.name}</div>
+                <span className="badge badge-info" style={{ display: 'inline-block', marginTop: 5 }}>{p.tipoProducto}</span>
+              </div>
+            </div>
+            <div className="m-card-body">
+              {p.descripcion && (
+                <div className="m-field-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+                  <span className="m-field-label">Descripción</span>
+                  <span className="m-field-value" style={{ fontSize: 12, color: 'var(--text-secondary)', textAlign: 'left' }}>{p.descripcion}</span>
+                </div>
+              )}
+              <div className="m-field-row">
+                <span className="m-field-label">Precio por litro</span>
+                <span className="m-field-value" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{fmt.currency(p.precioPorLitro)}</span>
+              </div>
+            </div>
+            <div className="m-actions">
+              <button className="m-btn" onClick={() => mProductOpenEdit(p)}><Icon name="edit" size={14} /> ✏️ Editar</button>
+              <button className="m-btn" style={{ color: 'var(--critical)' }} onClick={() => setMProductConfirmDel(p.id)}><Icon name="trash" size={14} /> Eliminar</button>
+            </div>
+          </div>
+        ))}
+
+        {mProducts.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)', fontSize: 13 }}>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>🧪</div>
+            No hay productos registrados en el catálogo.
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // Fallback: render desktop screen (it will adapt via existing CSS)
   const renderScreen = () => {
     switch (screen) {
@@ -6310,6 +6799,7 @@ const MobileScreenWrapper = ({ screen, onNav, alertCount, navData }) => {
       case 'reports': return <ReportsScreen />;
       case 'advisors': return <AdvisorsScreen />;
       case 'pests_catalog': return <PestsCatalogScreen />;
+      case 'products_catalog': return <ProductsCatalogScreen />;
       case 'users': return <UsersScreen />;
       default: return <DashboardScreen onNav={onNav} />;
     }
