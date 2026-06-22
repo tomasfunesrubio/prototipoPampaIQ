@@ -402,7 +402,7 @@ const FieldsScreen = ({ onNav }) => {
             <label className="form-label">Provincia *</label>
             <select className={`form-input form-select ${errors.province ? 'error' : ''}`} value={form.province} onChange={e => setForm({ ...form, province: e.target.value })}>
               <option value="">Seleccionar...</option>
-              {['Buenos Aires','Córdoba','Santa Fe','Entre Ríos','La Pampa','Santiago del Estero','Tucumán','Salta'].map(p => <option key={p}>{p}</option>)}
+              {['Buenos Aires', 'Córdoba', 'Santa Fe', 'Entre Ríos', 'La Pampa', 'Santiago del Estero', 'Tucumán', 'Salta'].map(p => <option key={p}>{p}</option>)}
             </select>
             {errors.province && <span className="form-error">⚠ {errors.province}</span>}
           </div>
@@ -1227,6 +1227,56 @@ const AlertsScreen = () => {
   const [alerts, setAlerts] = useState(DATA.alerts);
   const [thresholds, setThresholds] = useState({ incidence: 15, phenoDelay: 7 });
 
+  const [hField, setHField] = useState('');
+  const [hLot, setHLot] = useState('');
+  const [hCampaign, setHCampaign] = useState('');
+  const [hType, setHType] = useState('fenologica');
+  const [queryCriteria, setQueryCriteria] = useState(null);
+  const [queryError, setQueryError] = useState(false);
+  const [downloadOpen, setDownloadOpen] = useState(false);
+
+  const onHFieldChange = (fid) => {
+    setHField(fid);
+    setHLot('');
+    setHCampaign('');
+    setQueryError(false);
+  };
+  const onHLotChange = (lid) => {
+    setHLot(lid);
+    setHCampaign('');
+    setQueryError(false);
+  };
+  const onHCampaignChange = (cid) => {
+    setHCampaign(cid);
+    setQueryError(false);
+  };
+
+  const hFieldLots = hField ? DATA.lots.filter(l => l.fieldId === Number(hField)) : [];
+  const hLotCampaigns = hLot ? DATA.campaigns.filter(c => c.lotId === Number(hLot)) : [];
+
+  const handleConsultHistory = () => {
+    if (!hField || !hLot || !hCampaign || !hType) {
+      setQueryError(true);
+      setQueryCriteria(null);
+    } else {
+      setQueryError(false);
+      setQueryCriteria({
+        fieldId: Number(hField),
+        lotId: Number(hLot),
+        campaignId: Number(hCampaign),
+        type: hType
+      });
+    }
+  };
+
+  const filteredResults = queryCriteria
+    ? (DATA.alertsHistory || []).filter(a =>
+      a.lotId === queryCriteria.lotId &&
+      a.campaignId === queryCriteria.campaignId &&
+      a.type === queryCriteria.type
+    ).sort((a, b) => new Date(b.date) - new Date(a.date))
+    : [];
+
   const sortedAlerts = [...alerts].filter(a => !a.resolved).sort((a, b) => {
     const order = { critical: 0, high: 1, warning: 2, info: 3 };
     return order[a.severity] - order[b.severity];
@@ -1243,7 +1293,7 @@ const AlertsScreen = () => {
       <div className="tabs">
         <div className={`tab ${tab === 'active' ? 'active' : ''}`} onClick={() => setTab('active')}>Alertas activas <span style={{ marginLeft: 4, background: 'var(--critical)', color: '#fff', fontSize: 10, padding: '1px 6px', borderRadius: 10, fontFamily: 'var(--font-mono)' }}>{sortedAlerts.length}</span></div>
         <div className={`tab ${tab === 'config' ? 'active' : ''}`} onClick={() => setTab('config')}>Configuración de umbrales</div>
-        <div className={`tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>Historial resuelto</div>
+        <div className={`tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>Historial de alertas</div>
       </div>
 
       {tab === 'active' && (
@@ -1299,22 +1349,166 @@ const AlertsScreen = () => {
 
       {tab === 'history' && (
         <div>
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th>Lote</th><th>Tipo</th><th>Descripción</th><th>Fecha</th><th>Resolución</th></tr></thead>
-              <tbody>
-                {DATA.resolvedAlerts.map(a => (
-                  <tr key={a.id}>
-                    <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{a.lotName}</td>
-                    <td><span className="badge badge-neutral">{a.type}</span></td>
-                    <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{a.description}</td>
-                    <td className="td-mono" style={{ fontSize: 12 }}>{fmt.date(a.date)}</td>
-                    <td style={{ fontSize: 12, color: 'var(--success)' }}>✓ {a.resolution}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="card" style={{ marginBottom: 20 }}>
+            <div className="card-body">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, alignItems: 'end' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Campo</label>
+                  <select className="form-input form-select" value={hField} onChange={e => onHFieldChange(e.target.value)}>
+                    <option value="">Seleccionar campo...</option>
+                    {DATA.fields.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                  </select>
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Lote</label>
+                  <select className="form-input form-select" value={hLot} onChange={e => onHLotChange(e.target.value)} disabled={!hField}>
+                    <option value="">{hField ? 'Seleccionar lote...' : 'Primero seleccioná un campo'}</option>
+                    {hFieldLots.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  </select>
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Campaña</label>
+                  <select className="form-input form-select" value={hCampaign} onChange={e => onHCampaignChange(e.target.value)} disabled={!hLot}>
+                    <option value="">{hLot ? 'Seleccionar campaña...' : 'Primero seleccioná un lote'}</option>
+                    {hLotCampaigns.map(c => <option key={c.id} value={c.id}>{c.crop} ({fmt.date(c.startDate)})</option>)}
+                  </select>
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Tipo de alerta</label>
+                  <div style={{ display: 'flex', gap: 16, height: 38, alignItems: 'center' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
+                      <input type="radio" name="hType" value="fenologica" checked={hType === 'fenologica'} onChange={() => { setHType('fenologica'); setQueryError(false); }} />
+                      Fenológicas
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
+                      <input type="radio" name="hType" value="plagas" checked={hType === 'plagas'} onChange={() => { setHType('plagas'); setQueryError(false); }} />
+                      Plagas
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <button className="btn btn-primary" style={{ width: '100%', height: 38, justifyContent: 'center' }} onClick={handleConsultHistory}>
+                    Consultar historial
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {queryError && (
+            <div style={{ background: 'var(--critical-light)', border: '1.5px solid var(--critical)', borderRadius: 'var(--radius-lg)', padding: '16px 20px', marginBottom: 20, color: 'var(--critical)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span>⚠️</span>
+              <span>Seleccioná filtros para visualizar el historial</span>
+            </div>
+          )}
+
+          {!queryCriteria && !queryError && (
+            <div className="empty-state" style={{ padding: '40px 0' }}>
+              <div className="empty-state-icon">🔍</div>
+              <div className="empty-state-text" style={{ fontSize: 15, fontWeight: 600 }}>Seleccioná filtros para visualizar el historial</div>
+            </div>
+          )}
+
+          {queryCriteria && !queryError && (
+            <div>
+              {filteredResults.length === 0 ? (
+                <div className="empty-state" style={{ padding: '40px 0' }}>
+                  <div className="empty-state-icon">📭</div>
+                  <div className="empty-state-text" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    No se registraron alertas para los filtros seleccionados.
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                      <div className="stat-card" style={{ padding: '12px 20px', minWidth: 180, borderLeft: '4px solid var(--accent)' }}>
+                        <div className="stat-label" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Total Alertas {queryCriteria.type === 'fenologica' ? 'Fenológicas' : 'de Plagas'}
+                        </div>
+                        <div className="stat-value" style={{ fontSize: 24 }}>{filteredResults.length}</div>
+                      </div>
+                      <div className="stat-card" style={{ padding: '12px 20px', minWidth: 180, borderLeft: '4px solid var(--critical)' }}>
+                        <div className="stat-label" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Alertas Críticas
+                        </div>
+                        <div className="stat-value" style={{ fontSize: 24, color: 'var(--critical)' }}>
+                          {filteredResults.filter(a => a.severity === 'critical' || a.severity === 'high').length}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ position: 'relative' }}>
+                      <button className="btn btn-secondary" onClick={() => setDownloadOpen(!downloadOpen)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <span>⬇️ Descargar</span>
+                      </button>
+                      {downloadOpen && (
+                        <div style={{ position: 'absolute', top: 40, right: 0, background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', zIndex: 100, minWidth: 160, overflow: 'hidden' }}>
+                          <div className="dropdown-item" style={{ padding: '10px 14px', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}
+                            onClick={() => setDownloadOpen(false)}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-light)'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                            📄 PDF
+                          </div>
+                          <div className="dropdown-item" style={{ padding: '10px 14px', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}
+                            onClick={() => setDownloadOpen(false)}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-light)'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                            📊 Excel
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="table-wrap">
+                    <table>
+                      <thead>
+                        {queryCriteria.type === 'fenologica' ? (
+                          <tr>
+                            <th>Fecha</th>
+                            <th>Etapa</th>
+                            <th>Días de retraso</th>
+                            <th>Criticidad</th>
+                          </tr>
+                        ) : (
+                          <tr>
+                            <th>Fecha</th>
+                            <th>Plaga</th>
+                            <th>Incidencia</th>
+                            <th>Criticidad</th>
+                          </tr>
+                        )}
+                      </thead>
+                      <tbody>
+                        {filteredResults.map(a => (
+                          <tr key={a.id}>
+                            <td className="td-mono" style={{ fontSize: 12 }}>{fmt.date(a.date)}</td>
+                            {queryCriteria.type === 'fenologica' ? (
+                              <>
+                                <td style={{ fontWeight: 600 }}>{stageIcons[a.stage]} {a.stage}</td>
+                                <td className="td-mono">{a.delayDays} días</td>
+                              </>
+                            ) : (
+                              <>
+                                <td style={{ fontWeight: 600 }}>🐛 {a.pestName}</td>
+                                <td className="td-mono">{a.incidence}%</td>
+                              </>
+                            )}
+                            <td>
+                              <span className={`badge ${alertSevBadge[a.severity]}`}>
+                                {alertSevIcon[a.severity]} {alertSevLabel[a.severity]}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </PageShell>
@@ -2045,9 +2239,9 @@ const UsersScreen = () => {
   // 60% → --dark (Productor) · 30% → --text-secondary (Asesor) · 10% → --accent (Admin)
   const roleAvatarBg = { Productor: 'var(--dark)', Asesor: 'var(--text-secondary)', Admin: 'var(--accent)' };
   const roleBadgeStyle = {
-    Productor: { background: 'var(--accent-light)', color: 'var(--dark)',          border: '1px solid var(--border-dark)' },
-    Asesor:    { background: 'var(--bg)',           color: 'var(--text-secondary)', border: '1px solid var(--border)'      },
-    Admin:     { background: 'var(--dark)',          color: '#fff',                  border: 'none'                         },
+    Productor: { background: 'var(--accent-light)', color: 'var(--dark)', border: '1px solid var(--border-dark)' },
+    Asesor: { background: 'var(--bg)', color: 'var(--text-secondary)', border: '1px solid var(--border)' },
+    Admin: { background: 'var(--dark)', color: '#fff', border: 'none' },
   };
 
   const openCreate = () => {
@@ -2096,53 +2290,73 @@ const UsersScreen = () => {
 
   // ── PERM MATRIX DATA ──────────────────────────────────────────────────────
   const PERM_MATRIX = [
-    { section: 'Dashboard', rows: [
-      { action: 'Dashboard', productor: true, asesor: true, admin: true },
-    ]},
-    { section: 'Alertas', rows: [
-      { action: 'Ver', productor: true, asesor: true, admin: true },
-      { action: 'Configurar', productor: true, asesor: true, admin: true },
-    ]},
-    { section: 'Campos', rows: [
-      { action: 'Ver', productor: true, asesor: true, admin: true },
-      { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
-    ]},
-    { section: 'Lotes', rows: [
-      { action: 'Ver', productor: true, asesor: true, admin: true },
-      { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
-    ]},
-    { section: 'Campañas', rows: [
-      { action: 'Ver', productor: true, asesor: true, admin: true },
-      { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
-    ]},
-    { section: 'Visitas', rows: [
-      { action: 'Ver', productor: true, asesor: true, admin: true },
-      { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
-    ]},
-    { section: 'Órdenes de Aplicación', rows: [
-      { action: 'Ver', productor: true, asesor: true, admin: true },
-      { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
-      { action: 'Cambiar estado', productor: true, asesor: false, admin: true },
-    ]},
-    { section: 'Análisis', rows: [
-      { action: 'Análisis Fenológico', productor: true, asesor: true, admin: true },
-      { action: 'Evolución Sanitaria', productor: true, asesor: true, admin: true },
-      { action: 'Resultado Sanitario', productor: true, asesor: false, admin: true },
-    ]},
-    { section: 'Catálogo de Plagas', rows: [
-      { action: 'Ver', productor: true, asesor: true, admin: true },
-      { action: 'Editar', productor: true, asesor: false, admin: true },
-    ]},
-    { section: 'Sistema', rows: [
-      { action: 'Usuarios y Permisos', productor: false, asesor: false, admin: true },
-      { action: 'Mi Perfil', productor: true, asesor: true, admin: true },
-    ]},
+    {
+      section: 'Dashboard', rows: [
+        { action: 'Dashboard', productor: true, asesor: true, admin: true },
+      ]
+    },
+    {
+      section: 'Alertas', rows: [
+        { action: 'Ver', productor: true, asesor: true, admin: true },
+        { action: 'Configurar', productor: true, asesor: true, admin: true },
+      ]
+    },
+    {
+      section: 'Campos', rows: [
+        { action: 'Ver', productor: true, asesor: true, admin: true },
+        { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+      ]
+    },
+    {
+      section: 'Lotes', rows: [
+        { action: 'Ver', productor: true, asesor: true, admin: true },
+        { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+      ]
+    },
+    {
+      section: 'Campañas', rows: [
+        { action: 'Ver', productor: true, asesor: true, admin: true },
+        { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+      ]
+    },
+    {
+      section: 'Visitas', rows: [
+        { action: 'Ver', productor: true, asesor: true, admin: true },
+        { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
+      ]
+    },
+    {
+      section: 'Órdenes de Aplicación', rows: [
+        { action: 'Ver', productor: true, asesor: true, admin: true },
+        { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
+        { action: 'Cambiar estado', productor: true, asesor: false, admin: true },
+      ]
+    },
+    {
+      section: 'Análisis', rows: [
+        { action: 'Análisis Fenológico', productor: true, asesor: true, admin: true },
+        { action: 'Evolución Sanitaria', productor: true, asesor: true, admin: true },
+        { action: 'Resultado Sanitario', productor: true, asesor: false, admin: true },
+      ]
+    },
+    {
+      section: 'Catálogo de Plagas', rows: [
+        { action: 'Ver', productor: true, asesor: true, admin: true },
+        { action: 'Editar', productor: true, asesor: false, admin: true },
+      ]
+    },
+    {
+      section: 'Sistema', rows: [
+        { action: 'Usuarios y Permisos', productor: false, asesor: false, admin: true },
+        { action: 'Mi Perfil', productor: true, asesor: true, admin: true },
+      ]
+    },
   ];
 
   const ROLES = [
-    { key: 'productor', label: 'Productor',       short: 'Productor', headerBg: 'var(--dark)',           headerColor: 'rgba(255,255,255,0.75)', cellBg: null,                  dot: 'var(--dark)' },
-    { key: 'asesor',    label: 'Asesor Agrónomo', short: 'Asesor',    headerBg: 'var(--dark)',           headerColor: 'rgba(255,255,255,0.75)', cellBg: null,                  dot: 'var(--text-secondary)' },
-    { key: 'admin',     label: 'Administrador',   short: 'Admin',     headerBg: 'var(--accent)',         headerColor: '#fff',                   cellBg: 'var(--accent-light)', dot: 'var(--accent)', badge: 'ACCESO TOTAL' },
+    { key: 'productor', label: 'Productor', short: 'Productor', headerBg: 'var(--dark)', headerColor: 'rgba(255,255,255,0.75)', cellBg: null, dot: 'var(--dark)' },
+    { key: 'asesor', label: 'Asesor Agrónomo', short: 'Asesor', headerBg: 'var(--dark)', headerColor: 'rgba(255,255,255,0.75)', cellBg: null, dot: 'var(--text-secondary)' },
+    { key: 'admin', label: 'Administrador', short: 'Admin', headerBg: 'var(--accent)', headerColor: '#fff', cellBg: 'var(--accent-light)', dot: 'var(--accent)', badge: 'ACCESO TOTAL' },
   ];
 
   return (
@@ -2360,7 +2574,7 @@ const UsersScreen = () => {
           />
           {errors.email && <div className="form-error">{errors.email}</div>}
         </div>
-        
+
         {editing && (
           <div className="form-group" style={{ marginTop: 4, marginBottom: 16 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
@@ -2379,7 +2593,7 @@ const UsersScreen = () => {
                 Generar nueva contraseña y enviar por email
               </span>
             </label>
-            
+
             {generateNewPassword && (
               <div style={{
                 display: 'flex',

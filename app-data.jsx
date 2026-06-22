@@ -159,6 +159,24 @@ const DATA = {
     { id: 102, lotName: 'Lote Norte', type: 'fenológica', description: 'Retraso germinación — resuelta.', date: '2025-03-10', resolution: 'Se confirmó germinación uniforme el 15/03/2025' },
   ],
 
+  alertsHistory: [
+    // Campaign 1 (Lote Norte - Soja 2024/2025)
+    { id: 1, lotId: 1, campaignId: 1, type: 'fenologica', date: '2025-03-20', stage: 'Fructificación', delayDays: 8, threshold: '6 días', severity: 'high' },
+    { id: 2, lotId: 1, campaignId: 1, type: 'fenologica', date: '2025-01-25', stage: 'Floración', delayDays: 5, threshold: '4 días', severity: 'warning' },
+    { id: 3, lotId: 1, campaignId: 1, type: 'plagas', date: '2025-04-15', pestName: 'Roya asiática', incidence: 18, threshold: '15%', severity: 'critical' },
+    { id: 4, lotId: 1, campaignId: 1, type: 'plagas', date: '2025-02-12', pestName: 'Pulgón verde', incidence: 8, threshold: '5%', severity: 'warning' },
+
+    // Campaign 2 (Lote Sur - Maíz 2023/2024)
+    { id: 5, lotId: 2, campaignId: 2, type: 'fenologica', date: '2024-04-08', stage: 'Fructificación', delayDays: 10, threshold: '6 días', severity: 'high' },
+    { id: 6, lotId: 2, campaignId: 2, type: 'fenologica', date: '2024-02-15', stage: 'Floración', delayDays: 12, threshold: '4 días', severity: 'critical' },
+    { id: 7, lotId: 2, campaignId: 2, type: 'plagas', date: '2024-02-18', pestName: 'Trips del maíz', incidence: 42, threshold: '25%', severity: 'critical' },
+    { id: 8, lotId: 2, campaignId: 2, type: 'plagas', date: '2024-03-05', pestName: 'Chinche', incidence: 22, threshold: '15%', severity: 'high' },
+
+    // Campaign 4 (Lote Oeste - Soja 2024/2025)
+    { id: 9, lotId: 4, campaignId: 4, type: 'plagas', date: '2025-04-14', pestName: 'Trips', incidence: 32, threshold: '25%', severity: 'high' }
+  ],
+
+
   costs: [
     { lotId: 1, lotName: 'Lote Norte', crop: 'Soja', total: 485000, interventions: 4, mainPest: 'Roya asiática' },
     { lotId: 2, lotName: 'Lote Sur', crop: 'Maíz', total: 312000, interventions: 2, mainPest: 'Trips del maíz' },
@@ -176,18 +194,22 @@ const DATA = {
   ],
 
   phenoHistory: [
-    { lotId: 1, campaign: 'Soja 2024/2025', data: [
-      { date: '2024-10-15', stage: 'Germinación', expected: 'Germinación', onTime: true },
-      { date: '2024-11-10', stage: 'Macollaje', expected: 'Macollaje', onTime: true },
-      { date: '2025-01-20', stage: 'Floración', expected: 'Floración', onTime: true },
-      { date: '2025-03-15', stage: 'Fructificación', expected: 'Fructificación', onTime: true },
-    ]},
-    { lotId: 2, campaign: 'Maíz 2023/2024', data: [
-      { date: '2023-11-10', stage: 'Germinación', expected: 'Germinación', onTime: true },
-      { date: '2023-12-20', stage: 'Macollaje', expected: 'Macollaje', onTime: true },
-      { date: '2024-02-15', stage: 'Floración', expected: 'Floración', onTime: false },
-      { date: '2024-04-08', stage: 'Fructificación', expected: 'Fructificación', onTime: false },
-    ]},
+    {
+      lotId: 1, campaign: 'Soja 2024/2025', data: [
+        { date: '2024-10-15', stage: 'Germinación', expected: 'Germinación', onTime: true },
+        { date: '2024-11-10', stage: 'Macollaje', expected: 'Macollaje', onTime: true },
+        { date: '2025-01-20', stage: 'Floración', expected: 'Floración', onTime: true },
+        { date: '2025-03-15', stage: 'Fructificación', expected: 'Fructificación', onTime: true },
+      ]
+    },
+    {
+      lotId: 2, campaign: 'Maíz 2023/2024', data: [
+        { date: '2023-11-10', stage: 'Germinación', expected: 'Germinación', onTime: true },
+        { date: '2023-12-20', stage: 'Macollaje', expected: 'Macollaje', onTime: true },
+        { date: '2024-02-15', stage: 'Floración', expected: 'Floración', onTime: false },
+        { date: '2024-04-08', stage: 'Fructificación', expected: 'Fructificación', onTime: false },
+      ]
+    },
   ],
 
   sanitaryHistory: [

@@ -630,9 +630,20 @@
       transition: all 0.2s;
     }
 
-    .step-circle.done { background: var(--accent); color: #fff; }
-    .step-circle.active { background: var(--dark); color: #fff; }
-    .step-circle.pending { background: var(--border); color: var(--text-muted); }
+    .step-circle.done {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .step-circle.active {
+      background: var(--dark);
+      color: #fff;
+    }
+
+    .step-circle.pending {
+      background: var(--border);
+      color: var(--text-muted);
+    }
 
     .step-label {
       font-size: 11px;
@@ -645,7 +656,9 @@
       text-overflow: ellipsis;
     }
 
-    .step-label.active-label { color: var(--dark); }
+    .step-label.active-label {
+      color: var(--dark);
+    }
 
     .step-connector {
       flex: 1;
@@ -655,7 +668,9 @@
       min-width: 8px;
     }
 
-    .step-connector.done { background: var(--accent); }
+    .step-connector.done {
+      background: var(--accent);
+    }
 
     /* ── Progress Steps — mobile compact ── */
     .progress-steps-mobile {
@@ -703,17 +718,28 @@
       transition: background 0.2s;
     }
 
-    .psm-dot.done { background: var(--accent); }
-    .psm-dot.active { background: var(--dark); }
+    .psm-dot.done {
+      background: var(--accent);
+    }
+
+    .psm-dot.active {
+      background: var(--dark);
+    }
 
     @media (max-width: 600px) {
-      .progress-steps { display: none; }
-      .progress-steps-mobile { display: block; }
+      .progress-steps {
+        display: none;
+      }
+
+      .progress-steps-mobile {
+        display: block;
+      }
 
       .cf-row {
         flex-direction: column;
         gap: 2px !important;
       }
+
       .cf-row .cf-label {
         min-width: unset !important;
       }
@@ -1928,22 +1954,26 @@
         { id: 3, lotId: 3, crop: 'Trigo', startDate: '2024-06-15', phenoStage: 'Madurez', status: 'cerrada', breakEvenYield: 28, expectedDates: { 'Germinación': '2024-06-25', 'Macollaje': '2024-08-10', 'Floración': '2024-10-05', 'Fructificación': '2024-11-15', 'Madurez': '2024-12-20' } },
         { id: 4, lotId: 4, crop: 'Soja', startDate: '2024-10-10', phenoStage: 'Macollaje', status: 'activa', breakEvenYield: 34, expectedDates: { 'Germinación': '2024-10-25', 'Macollaje': '2024-11-20', 'Floración': '2025-01-30', 'Fructificación': '2025-03-25', 'Madurez': '2025-05-10' } },
         // Campañas históricas — Lote Norte (lotId:1)
-        { id: 10, lotId: 1, crop: 'Soja', startDate: '2023-10-03', phenoStage: 'Madurez', status: 'cerrada',
+        {
+          id: 10, lotId: 1, crop: 'Soja', startDate: '2023-10-03', phenoStage: 'Madurez', status: 'cerrada',
           expectedDates: { 'Germinación': '2023-10-18', 'Macollaje': '2023-11-12', 'Floración': '2024-01-22', 'Fructificación': '2024-03-18', 'Madurez': '2024-05-02' },
-          actualDates:   { 'Germinación': '2023-10-21', 'Macollaje': '2023-11-20', 'Floración': '2024-02-04', 'Fructificación': '2024-04-01', 'Madurez': '2024-05-14' },
+          actualDates: { 'Germinación': '2023-10-21', 'Macollaje': '2023-11-20', 'Floración': '2024-02-04', 'Fructificación': '2024-04-01', 'Madurez': '2024-05-14' },
           pestHistory: [
-            { stage: 'Macollaje',      pests: [{ name: 'Pulgón verde', level: 'bajo', incidence: 4 }] },
-            { stage: 'Floración',      pests: [{ name: 'Roya asiática', level: 'alto', incidence: 14 }, { name: 'Pulgón verde', level: 'bajo', incidence: 3 }] },
+            { stage: 'Macollaje', pests: [{ name: 'Pulgón verde', level: 'bajo', incidence: 4 }] },
+            { stage: 'Floración', pests: [{ name: 'Roya asiática', level: 'alto', incidence: 14 }, { name: 'Pulgón verde', level: 'bajo', incidence: 3 }] },
             { stage: 'Fructificación', pests: [{ name: 'Roya asiática', level: 'alto', incidence: 18 }] },
-          ] },
-        { id: 11, lotId: 1, crop: 'Maíz', startDate: '2022-11-05', phenoStage: 'Madurez', status: 'cerrada',
+          ]
+        },
+        {
+          id: 11, lotId: 1, crop: 'Maíz', startDate: '2022-11-05', phenoStage: 'Madurez', status: 'cerrada',
           expectedDates: { 'Germinación': '2022-11-20', 'Macollaje': '2022-12-22', 'Floración': '2023-02-18', 'Fructificación': '2023-04-12', 'Madurez': '2023-05-25' },
-          actualDates:   { 'Germinación': '2022-11-22', 'Macollaje': '2022-12-25', 'Floración': '2023-02-23', 'Fructificación': '2023-04-16', 'Madurez': '2023-05-28' },
+          actualDates: { 'Germinación': '2022-11-22', 'Macollaje': '2022-12-25', 'Floración': '2023-02-23', 'Fructificación': '2023-04-16', 'Madurez': '2023-05-28' },
           pestHistory: [
-            { stage: 'Macollaje',      pests: [{ name: 'Pulgón verde', level: 'bajo', incidence: 2 }] },
-            { stage: 'Floración',      pests: [{ name: 'Trips del maíz', level: 'medio', incidence: 8 }, { name: 'Roya asiática', level: 'bajo', incidence: 6 }] },
+            { stage: 'Macollaje', pests: [{ name: 'Pulgón verde', level: 'bajo', incidence: 2 }] },
+            { stage: 'Floración', pests: [{ name: 'Trips del maíz', level: 'medio', incidence: 8 }, { name: 'Roya asiática', level: 'bajo', incidence: 6 }] },
             { stage: 'Fructificación', pests: [{ name: 'Trips del maíz', level: 'bajo', incidence: 5 }] },
-          ] },
+          ]
+        },
       ],
 
       visits: [
@@ -2190,6 +2220,22 @@
           { name: 'Perfil', productor: true, asesor: true, admin: true },
         ],
       },
+      alertsHistory: [
+        // Campaign 1 (Lote Norte - Soja 2024/2025)
+        { id: 1, lotId: 1, campaignId: 1, type: 'fenologica', date: '2025-03-20', stage: 'Fructificación', delayDays: 8, threshold: '6 días', severity: 'high' },
+        { id: 2, lotId: 1, campaignId: 1, type: 'fenologica', date: '2025-01-25', stage: 'Floración', delayDays: 5, threshold: '4 días', severity: 'warning' },
+        { id: 3, lotId: 1, campaignId: 1, type: 'plagas', date: '2025-04-15', pestName: 'Roya asiática', incidence: 18, threshold: '15%', severity: 'critical' },
+        { id: 4, lotId: 1, campaignId: 1, type: 'plagas', date: '2025-02-12', pestName: 'Pulgón verde', incidence: 8, threshold: '5%', severity: 'warning' },
+        
+        // Campaign 2 (Lote Sur - Maíz 2023/2024)
+        { id: 5, lotId: 2, campaignId: 2, type: 'fenologica', date: '2024-04-08', stage: 'Fructificación', delayDays: 10, threshold: '6 días', severity: 'high' },
+        { id: 6, lotId: 2, campaignId: 2, type: 'fenologica', date: '2024-02-15', stage: 'Floración', delayDays: 12, threshold: '4 días', severity: 'critical' },
+        { id: 7, lotId: 2, campaignId: 2, type: 'plagas', date: '2024-02-18', pestName: 'Trips del maíz', incidence: 42, threshold: '25%', severity: 'critical' },
+        { id: 8, lotId: 2, campaignId: 2, type: 'plagas', date: '2024-03-05', pestName: 'Chinche', incidence: 22, threshold: '15%', severity: 'high' },
+
+        // Campaign 4 (Lote Oeste - Soja 2024/2025)
+        { id: 9, lotId: 4, campaignId: 4, type: 'plagas', date: '2025-04-14', pestName: 'Trips', incidence: 32, threshold: '25%', severity: 'high' }
+      ]
     };
 
     // Helpers
@@ -2732,7 +2778,7 @@
       const goLogin = () => {
         setMode('login');
         setRecEmail(''); setRecEmailErr('');
-        setOtpDigits(['','','','','','']); setOtpError(''); setResent(false);
+        setOtpDigits(['', '', '', '', '', '']); setOtpError(''); setResent(false);
         setNewPass(''); setConfirmPass(''); setPassErrors({});
       };
 
@@ -2786,7 +2832,7 @@
       const handleResend = (e) => {
         e.preventDefault();
         setResent(true);
-        setOtpDigits(['','','','','','']);
+        setOtpDigits(['', '', '', '', '', '']);
         setOtpError('');
         setTimeout(() => setResent(false), 3000);
       };
@@ -4549,8 +4595,8 @@
                 )}
 
                 {step === 3 && (() => {
-                  const cfField    = DATA.fields.find(f => f.id === Number(form.fieldId));
-                  const cfLot      = DATA.lots.find(l => l.id === Number(form.lotId));
+                  const cfField = DATA.fields.find(f => f.id === Number(form.fieldId));
+                  const cfLot = DATA.lots.find(l => l.id === Number(form.lotId));
                   const cfCampaign = DATA.campaigns.find(c => c.id === Number(form.campaignId));
 
                   const gridCounts = {};
@@ -5058,13 +5104,13 @@
       }
 
       if (view === 'confirm') {
-        const cfField    = DATA.fields.find(f => f.id === Number(form.fieldId));
-        const cfLot      = DATA.lots.find(l => l.id === Number(form.lotId));
+        const cfField = DATA.fields.find(f => f.id === Number(form.fieldId));
+        const cfLot = DATA.lots.find(l => l.id === Number(form.lotId));
         const cfCampaign = DATA.campaigns.find(c => c.id === Number(form.campaignId));
-        const cfFuelTotal     = calcFuelTotal();
-        const cfLaborTotal    = calcLaborTotal();
+        const cfFuelTotal = calcFuelTotal();
+        const cfLaborTotal = calcLaborTotal();
         const cfProductsTotal = calcProductsTotal();
-        const cfGrandTotal    = calcGrandTotal();
+        const cfGrandTotal = calcGrandTotal();
 
         const ORow = ({ label, value }) => {
           if (value === null || value === undefined || value === '' || value === false) return null;
@@ -5100,11 +5146,11 @@
                 <div className="card-header"><div className="card-title">📍 Datos generales</div></div>
                 <div className="card-body">
                   <ORow label="Tipo de aplicación" value={form.appType} />
-                  <ORow label="Campo"              value={cfField?.name} />
-                  <ORow label="Lote"               value={cfLot?.name} />
-                  <ORow label="Campaña"            value={cfCampaign ? `${cfCampaign.crop} — desde ${fmt.date(cfCampaign.startDate)}` : null} />
-                  <ORow label="Fecha"              value={form.date ? fmt.date(form.date) : null} />
-                  <ORow label="Equipo"             value={form.equipment || null} />
+                  <ORow label="Campo" value={cfField?.name} />
+                  <ORow label="Lote" value={cfLot?.name} />
+                  <ORow label="Campaña" value={cfCampaign ? `${cfCampaign.crop} — desde ${fmt.date(cfCampaign.startDate)}` : null} />
+                  <ORow label="Fecha" value={form.date ? fmt.date(form.date) : null} />
+                  <ORow label="Equipo" value={form.equipment || null} />
                 </div>
               </div>
 
@@ -5140,8 +5186,8 @@
                   <div className="card-header"><div className="card-title">💰 Costos adicionales</div></div>
                   <div className="card-body">
                     <ORow label="Traslado de insumos" value={parseNum(form.transportCost) > 0 ? fmt.currency(parseNum(form.transportCost)) : null} />
-                    <ORow label="Combustible"         value={cfFuelTotal > 0 ? `${form.fuelLiters} L × ${fmt.currency(parseNum(form.fuelPrice))} = ${fmt.currency(cfFuelTotal)}` : null} />
-                    <ORow label="Mano de obra"        value={cfLaborTotal > 0 ? `${form.laborDays} jornales × ${fmt.currency(parseNum(form.laborPrice))} = ${fmt.currency(cfLaborTotal)}` : null} />
+                    <ORow label="Combustible" value={cfFuelTotal > 0 ? `${form.fuelLiters} L × ${fmt.currency(parseNum(form.fuelPrice))} = ${fmt.currency(cfFuelTotal)}` : null} />
+                    <ORow label="Mano de obra" value={cfLaborTotal > 0 ? `${form.laborDays} jornales × ${fmt.currency(parseNum(form.laborPrice))} = ${fmt.currency(cfLaborTotal)}` : null} />
                     <ORow label={form.otherDesc || 'Otros costos'} value={parseNum(form.otherCost) > 0 ? fmt.currency(parseNum(form.otherCost)) : null} />
                   </div>
                 </div>
@@ -5437,18 +5483,18 @@
       const cfgLotCampaigns = cfgLot ? DATA.campaigns.filter(c => c.lotId === Number(cfgLot)) : [];
       const cfgKey = cfgField && cfgLot && cfgCampaign ? `${cfgField}-${cfgLot}-${cfgCampaign}` : null;
       const defaultPestCfg = () => ([
-        { id: 1, name: 'Roya asiática',       crop: 'Soja',         defaultThreshold: 15,  defaultUnit: '%',              custom: '', active: true  },
-        { id: 2, name: 'Trips del maíz',      crop: 'Maíz',         defaultThreshold: 25,  defaultUnit: 'trips/hoja',     custom: '', active: true  },
-        { id: 3, name: 'Pulgón verde',         crop: 'Soja / Trigo', defaultThreshold: 500, defaultUnit: 'pulgones/metro', custom: '', active: true  },
-        { id: 4, name: 'Chinche de la soja',  crop: 'Soja',         defaultThreshold: 1,   defaultUnit: 'chinche/metro',  custom: '', active: true  },
-        { id: 5, name: 'Fusariosis',           crop: 'Trigo / Maíz',defaultThreshold: 10,  defaultUnit: '%',              custom: '', active: false },
+        { id: 1, name: 'Roya asiática', crop: 'Soja', defaultThreshold: 15, defaultUnit: '%', custom: '', active: true },
+        { id: 2, name: 'Trips del maíz', crop: 'Maíz', defaultThreshold: 25, defaultUnit: 'trips/hoja', custom: '', active: true },
+        { id: 3, name: 'Pulgón verde', crop: 'Soja / Trigo', defaultThreshold: 500, defaultUnit: 'pulgones/metro', custom: '', active: true },
+        { id: 4, name: 'Chinche de la soja', crop: 'Soja', defaultThreshold: 1, defaultUnit: 'chinche/metro', custom: '', active: true },
+        { id: 5, name: 'Fusariosis', crop: 'Trigo / Maíz', defaultThreshold: 10, defaultUnit: '%', custom: '', active: false },
       ]);
       const defaultPhenoCfg = () => ([
-        { stage: 'Germinación',    icon: '🌱', days: 5,  active: true },
-        { stage: 'Macollaje',      icon: '🌿', days: 7,  active: true },
-        { stage: 'Floración',      icon: '🌸', days: 4,  active: true },
-        { stage: 'Fructificación', icon: '🌾', days: 6,  active: true },
-        { stage: 'Madurez',        icon: '🟡', days: 10, active: true },
+        { stage: 'Germinación', icon: '🌱', days: 5, active: true },
+        { stage: 'Macollaje', icon: '🌿', days: 7, active: true },
+        { stage: 'Floración', icon: '🌸', days: 4, active: true },
+        { stage: 'Fructificación', icon: '🌾', days: 6, active: true },
+        { stage: 'Madurez', icon: '🟡', days: 10, active: true },
       ]);
       const onCfgFieldChange = fid => {
         setCfgField(fid); setCfgLot(''); setCfgCampaign('');
@@ -5466,6 +5512,56 @@
         if (saved) { setPestConfig(saved.pestConfig); setPhenoConfig(saved.phenoConfig); }
         else { setPestConfig(defaultPestCfg()); setPhenoConfig(defaultPhenoCfg()); }
       };
+
+      const [hField, setHField] = useState('');
+      const [hLot, setHLot] = useState('');
+      const [hCampaign, setHCampaign] = useState('');
+      const [hType, setHType] = useState('fenologica');
+      const [queryCriteria, setQueryCriteria] = useState(null);
+      const [queryError, setQueryError] = useState(false);
+      const [downloadOpen, setDownloadOpen] = useState(false);
+
+      const onHFieldChange = (fid) => {
+        setHField(fid);
+        setHLot('');
+        setHCampaign('');
+        setQueryError(false);
+      };
+      const onHLotChange = (lid) => {
+        setHLot(lid);
+        setHCampaign('');
+        setQueryError(false);
+      };
+      const onHCampaignChange = (cid) => {
+        setHCampaign(cid);
+        setQueryError(false);
+      };
+
+      const hFieldLots = hField ? DATA.lots.filter(l => l.fieldId === Number(hField)) : [];
+      const hLotCampaigns = hLot ? DATA.campaigns.filter(c => c.lotId === Number(hLot)) : [];
+
+      const handleConsultHistory = () => {
+        if (!hField || !hLot || !hCampaign || !hType) {
+          setQueryError(true);
+          setQueryCriteria(null);
+        } else {
+          setQueryError(false);
+          setQueryCriteria({
+            fieldId: Number(hField),
+            lotId: Number(hLot),
+            campaignId: Number(hCampaign),
+            type: hType
+          });
+        }
+      };
+
+      const filteredResults = queryCriteria
+        ? (DATA.alertsHistory || []).filter(a =>
+          a.lotId === queryCriteria.lotId &&
+          a.campaignId === queryCriteria.campaignId &&
+          a.type === queryCriteria.type
+        ).sort((a, b) => new Date(b.date) - new Date(a.date))
+        : [];
 
       const showConfigSaved = (msg) => { setConfigSaved(msg); setTimeout(() => setConfigSaved(null), 2200); };
       const Toggle = ({ value, onChange }) => (
@@ -5491,7 +5587,7 @@
           <div className="tabs">
             <div className={`tab ${tab === 'active' ? 'active' : ''}`} onClick={() => setTab('active')}>Alertas activas <span style={{ marginLeft: 4, background: 'var(--critical)', color: '#fff', fontSize: 10, padding: '1px 6px', borderRadius: 10, fontFamily: 'var(--font-mono)' }}>{sortedAlerts.length}</span></div>
             <div className={`tab ${tab === 'config' ? 'active' : ''}`} onClick={() => setTab('config')}>Configurar Alertas</div>
-            <div className={`tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>Historial resuelto</div>
+            <div className={`tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>Historial de alertas</div>
           </div>
 
           {tab === 'active' && (
@@ -5727,22 +5823,166 @@
 
           {tab === 'history' && (
             <div>
-              <div className="table-wrap">
-                <table>
-                  <thead><tr><th>Lote</th><th>Tipo</th><th>Descripción</th><th>Fecha</th><th>Resolución</th></tr></thead>
-                  <tbody>
-                    {DATA.resolvedAlerts.map(a => (
-                      <tr key={a.id}>
-                        <td style={{ fontFamily: 'var(--font-head)', fontWeight: 600 }}>{a.lotName}</td>
-                        <td><span className="badge badge-neutral">{a.type}</span></td>
-                        <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{a.description}</td>
-                        <td className="td-mono" style={{ fontSize: 12 }}>{fmt.date(a.date)}</td>
-                        <td style={{ fontSize: 12, color: 'var(--success)' }}>✓ {a.resolution}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="card" style={{ marginBottom: 20 }}>
+                <div className="card-body">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, alignItems: 'end' }}>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">Campo</label>
+                      <select className="form-input form-select" value={hField} onChange={e => onHFieldChange(e.target.value)}>
+                        <option value="">Seleccionar campo...</option>
+                        {DATA.fields.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">Lote</label>
+                      <select className="form-input form-select" value={hLot} onChange={e => onHLotChange(e.target.value)} disabled={!hField}>
+                        <option value="">{hField ? 'Seleccionar lote...' : 'Primero seleccioná un campo'}</option>
+                        {hFieldLots.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">Campaña</label>
+                      <select className="form-input form-select" value={hCampaign} onChange={e => onHCampaignChange(e.target.value)} disabled={!hLot}>
+                        <option value="">{hLot ? 'Seleccionar campaña...' : 'Primero seleccioná un lote'}</option>
+                        {hLotCampaigns.map(c => <option key={c.id} value={c.id}>{c.crop} ({fmt.date(c.startDate)})</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">Tipo de alerta</label>
+                      <div style={{ display: 'flex', gap: 16, height: 38, alignItems: 'center' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
+                          <input type="radio" name="hType" value="fenologica" checked={hType === 'fenologica'} onChange={() => { setHType('fenologica'); setQueryError(false); }} />
+                          Fenológicas
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
+                          <input type="radio" name="hType" value="plagas" checked={hType === 'plagas'} onChange={() => { setHType('plagas'); setQueryError(false); }} />
+                          Plagas
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <button className="btn btn-primary" style={{ width: '100%', height: 38, justifyContent: 'center' }} onClick={handleConsultHistory}>
+                        Consultar historial
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {queryError && (
+                <div style={{ background: 'var(--critical-light)', border: '1.5px solid var(--critical)', borderRadius: 'var(--radius-lg)', padding: '16px 20px', marginBottom: 20, color: 'var(--critical)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span>⚠️</span>
+                  <span>Seleccioná filtros para visualizar el historial</span>
+                </div>
+              )}
+
+              {!queryCriteria && !queryError && (
+                <div className="empty-state" style={{ padding: '40px 0' }}>
+                  <div className="empty-state-icon">🔍</div>
+                  <div className="empty-state-text" style={{ fontSize: 15, fontWeight: 600 }}>Seleccioná filtros para visualizar el historial</div>
+                </div>
+              )}
+
+              {queryCriteria && !queryError && (
+                <div>
+                  {filteredResults.length === 0 ? (
+                    <div className="empty-state" style={{ padding: '40px 0' }}>
+                      <div className="empty-state-icon">📭</div>
+                      <div className="empty-state-text" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                        No se registraron alertas para los filtros seleccionados.
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
+                        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                          <div className="stat-card" style={{ padding: '12px 20px', minWidth: 180, borderLeft: '4px solid var(--accent)' }}>
+                            <div className="stat-label" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              Total Alertas {queryCriteria.type === 'fenologica' ? 'Fenológicas' : 'de Plagas'}
+                            </div>
+                            <div className="stat-value" style={{ fontSize: 24 }}>{filteredResults.length}</div>
+                          </div>
+                          <div className="stat-card" style={{ padding: '12px 20px', minWidth: 180, borderLeft: '4px solid var(--critical)' }}>
+                            <div className="stat-label" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              Alertas Críticas
+                            </div>
+                            <div className="stat-value" style={{ fontSize: 24, color: 'var(--critical)' }}>
+                              {filteredResults.filter(a => a.severity === 'critical' || a.severity === 'high').length}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ position: 'relative' }}>
+                          <button className="btn btn-secondary" onClick={() => setDownloadOpen(!downloadOpen)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                            <span>⬇️ Descargar</span>
+                          </button>
+                          {downloadOpen && (
+                            <div style={{ position: 'absolute', top: 40, right: 0, background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', zIndex: 100, minWidth: 160, overflow: 'hidden' }}>
+                              <div className="dropdown-item" style={{ padding: '10px 14px', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}
+                                onClick={() => setDownloadOpen(false)}
+                                onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-light)'}
+                                onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                                📄 PDF
+                              </div>
+                              <div className="dropdown-item" style={{ padding: '10px 14px', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}
+                                onClick={() => setDownloadOpen(false)}
+                                onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-light)'}
+                                onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                                📊 Excel
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="table-wrap">
+                        <table>
+                          <thead>
+                            {queryCriteria.type === 'fenologica' ? (
+                              <tr>
+                                <th>Fecha</th>
+                                <th>Etapa</th>
+                                <th>Días de retraso</th>
+                                <th>Criticidad</th>
+                              </tr>
+                            ) : (
+                              <tr>
+                                <th>Fecha</th>
+                                <th>Plaga</th>
+                                <th>Incidencia</th>
+                                <th>Criticidad</th>
+                              </tr>
+                            )}
+                          </thead>
+                          <tbody>
+                            {filteredResults.map(a => (
+                              <tr key={a.id}>
+                                <td className="td-mono" style={{ fontSize: 12 }}>{fmt.date(a.date)}</td>
+                                {queryCriteria.type === 'fenologica' ? (
+                                  <>
+                                    <td style={{ fontWeight: 600 }}>{stageIcons[a.stage]} {a.stage}</td>
+                                    <td className="td-mono">{a.delayDays} días</td>
+                                  </>
+                                ) : (
+                                  <>
+                                    <td style={{ fontWeight: 600 }}>🐛 {a.pestName}</td>
+                                    <td className="td-mono">{a.incidence}%</td>
+                                  </>
+                                )}
+                                <td>
+                                  <span className={`badge ${alertSevBadge[a.severity]}`}>
+                                    {alertSevIcon[a.severity]} {alertSevLabel[a.severity]}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </PageShell>
@@ -6437,7 +6677,7 @@
               const sanCamp = DATA.campaigns.find(c => c.id === Number(sanCampaign));
               const sanLotName = DATA.lots.find(l => l.id === Number(sanLot))?.name || 'Lote';
               const sanFieldName = DATA.fields.find(f => f.id === Number(sanField))?.name || 'Campo';
-              const dlFn = `Evolucion-Sanitaria-${sanFieldName.replace(/\s/g,'-')}-${sanLotName.replace(/\s/g,'-')}-${(sanCamp?.crop||'').replace(/\s/g,'-')}`;
+              const dlFn = `Evolucion-Sanitaria-${sanFieldName.replace(/\s/g, '-')}-${sanLotName.replace(/\s/g, '-')}-${(sanCamp?.crop || '').replace(/\s/g, '-')}`;
               const DlMenu = ({ pos }) => (
                 <div style={{ position: 'absolute', ...pos, background: '#fff', border: '1px solid var(--border)', borderRadius: 10, boxShadow: '0 4px 20px rgba(0,0,0,0.13)', zIndex: 300, minWidth: 190, overflow: 'hidden' }}>
                   {[['📄 Descargar como PDF', 'pdf'], ['📊 Descargar como Excel', 'xlsx']].map(([label, type], idx) => (
@@ -7128,10 +7368,10 @@
               {/* ── KPIs globales ── */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
                 {[
-                  { label: 'Ingreso total',           value: fmt.currency(totalRevenue),  color: 'var(--success)' },
-                  { label: 'Costo total',              value: fmt.currency(totalCost),      color: 'var(--dark)' },
-                  { label: 'Resultado neto',           value: (totalNet < 0 ? '−' : '') + fmt.currency(Math.abs(totalNet)), color: totalNet >= 0 ? 'var(--success)' : 'var(--critical)' },
-                  { label: 'Costo promedio / ha',      value: `$${avgCostPerHa.toLocaleString('es-AR')}/ha`, color: 'var(--dark)' },
+                  { label: 'Ingreso total', value: fmt.currency(totalRevenue), color: 'var(--success)' },
+                  { label: 'Costo total', value: fmt.currency(totalCost), color: 'var(--dark)' },
+                  { label: 'Resultado neto', value: (totalNet < 0 ? '−' : '') + fmt.currency(Math.abs(totalNet)), color: totalNet >= 0 ? 'var(--success)' : 'var(--critical)' },
+                  { label: 'Costo promedio / ha', value: `$${avgCostPerHa.toLocaleString('es-AR')}/ha`, color: 'var(--dark)' },
                 ].map((kpi, i) => (
                   <div key={i} className="stat-card">
                     <div className="stat-label">{kpi.label}</div>
@@ -7907,9 +8147,9 @@
       // 60% → --dark (Productor) · 30% → --text-secondary (Asesor) · 10% → --accent (Admin)
       const roleAvatarBg = { Productor: 'var(--dark)', Asesor: 'var(--text-secondary)', Admin: 'var(--accent)' };
       const roleBadgeStyle = {
-        Productor: { background: 'var(--accent-light)', color: 'var(--dark)',          border: '1px solid var(--border-dark)' },
-        Asesor:    { background: 'var(--bg)',           color: 'var(--text-secondary)', border: '1px solid var(--border)'      },
-        Admin:     { background: 'var(--dark)',          color: '#fff',                  border: 'none'                         },
+        Productor: { background: 'var(--accent-light)', color: 'var(--dark)', border: '1px solid var(--border-dark)' },
+        Asesor: { background: 'var(--bg)', color: 'var(--text-secondary)', border: '1px solid var(--border)' },
+        Admin: { background: 'var(--dark)', color: '#fff', border: 'none' },
       };
 
       const openCreate = () => {
@@ -7958,53 +8198,73 @@
 
       // ── PERM MATRIX DATA ──────────────────────────────────────────────────────
       const PERM_MATRIX = [
-        { section: 'Dashboard', rows: [
-          { action: 'Dashboard', productor: true, asesor: true, admin: true },
-        ]},
-        { section: 'Alertas', rows: [
-          { action: 'Ver', productor: true, asesor: true, admin: true },
-          { action: 'Configurar', productor: true, asesor: true, admin: true },
-        ]},
-        { section: 'Campos', rows: [
-          { action: 'Ver', productor: true, asesor: true, admin: true },
-          { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
-        ]},
-        { section: 'Lotes', rows: [
-          { action: 'Ver', productor: true, asesor: true, admin: true },
-          { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
-        ]},
-        { section: 'Campañas', rows: [
-          { action: 'Ver', productor: true, asesor: true, admin: true },
-          { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
-        ]},
-        { section: 'Visitas', rows: [
-          { action: 'Ver', productor: true, asesor: true, admin: true },
-          { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
-        ]},
-        { section: 'Órdenes de Aplicación', rows: [
-          { action: 'Ver', productor: true, asesor: true, admin: true },
-          { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
-          { action: 'Cambiar estado', productor: true, asesor: false, admin: true },
-        ]},
-        { section: 'Análisis', rows: [
-          { action: 'Análisis Fenológico', productor: true, asesor: true, admin: true },
-          { action: 'Evolución Sanitaria', productor: true, asesor: true, admin: true },
-          { action: 'Resultado Sanitario', productor: true, asesor: false, admin: true },
-        ]},
-        { section: 'Catálogo de Plagas', rows: [
-          { action: 'Ver', productor: true, asesor: true, admin: true },
-          { action: 'Editar', productor: true, asesor: false, admin: true },
-        ]},
-        { section: 'Sistema', rows: [
-          { action: 'Usuarios y Permisos', productor: false, asesor: false, admin: true },
-          { action: 'Mi Perfil', productor: true, asesor: true, admin: true },
-        ]},
+        {
+          section: 'Dashboard', rows: [
+            { action: 'Dashboard', productor: true, asesor: true, admin: true },
+          ]
+        },
+        {
+          section: 'Alertas', rows: [
+            { action: 'Ver', productor: true, asesor: true, admin: true },
+            { action: 'Configurar', productor: true, asesor: true, admin: true },
+          ]
+        },
+        {
+          section: 'Campos', rows: [
+            { action: 'Ver', productor: true, asesor: true, admin: true },
+            { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+          ]
+        },
+        {
+          section: 'Lotes', rows: [
+            { action: 'Ver', productor: true, asesor: true, admin: true },
+            { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+          ]
+        },
+        {
+          section: 'Campañas', rows: [
+            { action: 'Ver', productor: true, asesor: true, admin: true },
+            { action: 'Crear / Editar', productor: true, asesor: false, admin: true },
+          ]
+        },
+        {
+          section: 'Visitas', rows: [
+            { action: 'Ver', productor: true, asesor: true, admin: true },
+            { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
+          ]
+        },
+        {
+          section: 'Órdenes de Aplicación', rows: [
+            { action: 'Ver', productor: true, asesor: true, admin: true },
+            { action: 'Crear / Editar', productor: true, asesor: true, admin: true },
+            { action: 'Cambiar estado', productor: true, asesor: false, admin: true },
+          ]
+        },
+        {
+          section: 'Análisis', rows: [
+            { action: 'Análisis Fenológico', productor: true, asesor: true, admin: true },
+            { action: 'Evolución Sanitaria', productor: true, asesor: true, admin: true },
+            { action: 'Resultado Sanitario', productor: true, asesor: false, admin: true },
+          ]
+        },
+        {
+          section: 'Catálogo de Plagas', rows: [
+            { action: 'Ver', productor: true, asesor: true, admin: true },
+            { action: 'Editar', productor: true, asesor: false, admin: true },
+          ]
+        },
+        {
+          section: 'Sistema', rows: [
+            { action: 'Usuarios y Permisos', productor: false, asesor: false, admin: true },
+            { action: 'Mi Perfil', productor: true, asesor: true, admin: true },
+          ]
+        },
       ];
 
       const ROLES = [
-        { key: 'productor', label: 'Productor',       short: 'Productor', headerBg: 'var(--dark)',           headerColor: 'rgba(255,255,255,0.75)', cellBg: null,                  dot: 'var(--dark)' },
-        { key: 'asesor',    label: 'Asesor Agrónomo', short: 'Asesor',    headerBg: 'var(--dark)',           headerColor: 'rgba(255,255,255,0.75)', cellBg: null,                  dot: 'var(--text-secondary)' },
-        { key: 'admin',     label: 'Administrador',   short: 'Admin',     headerBg: 'var(--accent)',         headerColor: '#fff',                   cellBg: 'var(--accent-light)', dot: 'var(--accent)', badge: 'ACCESO TOTAL' },
+        { key: 'productor', label: 'Productor', short: 'Productor', headerBg: 'var(--dark)', headerColor: 'rgba(255,255,255,0.75)', cellBg: null, dot: 'var(--dark)' },
+        { key: 'asesor', label: 'Asesor Agrónomo', short: 'Asesor', headerBg: 'var(--dark)', headerColor: 'rgba(255,255,255,0.75)', cellBg: null, dot: 'var(--text-secondary)' },
+        { key: 'admin', label: 'Administrador', short: 'Admin', headerBg: 'var(--accent)', headerColor: '#fff', cellBg: 'var(--accent-light)', dot: 'var(--accent)', badge: 'ACCESO TOTAL' },
       ];
 
       return (
@@ -8222,7 +8482,7 @@
               />
               {errors.email && <div className="form-error">{errors.email}</div>}
             </div>
-            
+
             {editing && (
               <div className="form-group" style={{ marginTop: 4, marginBottom: 16 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
@@ -8241,7 +8501,7 @@
                     Generar nueva contraseña y enviar por email
                   </span>
                 </label>
-                
+
                 {generateNewPassword && (
                   <div style={{
                     display: 'flex',
@@ -8923,7 +9183,7 @@
         const [mFieldForm, setMFieldForm] = React.useState(defaultForm);
         const [mFieldErrors, setMFieldErrors] = React.useState({});
 
-        const AR_PROVINCES = ['Buenos Aires','Catamarca','Chaco','Chubut','Ciudad Autónoma de Buenos Aires','Córdoba','Corrientes','Entre Ríos','Formosa','Jujuy','La Pampa','La Rioja','Mendoza','Misiones','Neuquén','Río Negro','Salta','San Juan','San Luis','Santa Cruz','Santa Fe','Santiago del Estero','Tierra del Fuego','Tucumán'];
+        const AR_PROVINCES = ['Buenos Aires', 'Catamarca', 'Chaco', 'Chubut', 'Ciudad Autónoma de Buenos Aires', 'Córdoba', 'Corrientes', 'Entre Ríos', 'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén', 'Río Negro', 'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán'];
 
         const openCreate = () => { setMFieldEditing(null); setMFieldForm(defaultForm); setMFieldErrors({}); setMFieldModal(true); };
         const openEdit = (f) => { setMFieldEditing(f); setMFieldForm({ name: f.name, province: f.province, district: f.district, area: f.area, lots: f.lots, location: f.location || '' }); setMFieldErrors({}); setMFieldModal(true); };
@@ -9253,7 +9513,7 @@
                 )}
                 {mVisitStep === 3 && (() => {
                   const cfField = DATA.fields.find(f => f.id === Number(mVisitForm.fieldId));
-                  const cfLot   = DATA.lots.find(l => l.id === Number(mVisitForm.lotId));
+                  const cfLot = DATA.lots.find(l => l.id === Number(mVisitForm.lotId));
                   const MRow = ({ label, value }) => {
                     if (!value && value !== 0) return null;
                     return (
@@ -9325,16 +9585,16 @@
                 {mVisitStep < stepTitles.length - 1
                   ? <button onClick={() => setMVisitStep(s => s + 1)} style={{ flex: 2, height: 52, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 12, fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Siguiente →</button>
                   : <button onClick={() => {
-                      if (mVisitEditing) {
-                        const updated = { ...mVisitEditing, ...mVisitForm, severity: mVisitForm.pests[0]?.level || mVisitEditing.severity };
-                        setMVisits(prev => prev.map(vv => vv.id === mVisitEditing.id ? updated : vv));
-                        setMSelected(updated);
-                        setMVisitView('detail');
-                      }
-                      setMVisitModal(false);
-                      setMVisitStep(0);
-                      setMVisitEditing(null);
-                    }} style={{ flex: 2, height: 52, background: '#2E7D4F', color: '#fff', border: 'none', borderRadius: 12, fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>✓ {mVisitEditing ? 'Guardar cambios' : 'Guardar visita'}</button>
+                    if (mVisitEditing) {
+                      const updated = { ...mVisitEditing, ...mVisitForm, severity: mVisitForm.pests[0]?.level || mVisitEditing.severity };
+                      setMVisits(prev => prev.map(vv => vv.id === mVisitEditing.id ? updated : vv));
+                      setMSelected(updated);
+                      setMVisitView('detail');
+                    }
+                    setMVisitModal(false);
+                    setMVisitStep(0);
+                    setMVisitEditing(null);
+                  }} style={{ flex: 2, height: 52, background: '#2E7D4F', color: '#fff', border: 'none', borderRadius: 12, fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>✓ {mVisitEditing ? 'Guardar cambios' : 'Guardar visita'}</button>
                 }
               </div>
             </div>
@@ -9613,9 +9873,9 @@
         const StatusModal = () => {
           if (!mStatusModal) return null;
           const sBadge = {
-            pendiente: { cls: 'badge-warning',  icon: '⏳', label: 'Pendiente' },
-            ejecutada: { cls: 'badge-success',  icon: '✅', label: 'Ejecutada' },
-            cancelada: { cls: 'badge-critical', icon: '✗',  label: 'Cancelada' },
+            pendiente: { cls: 'badge-warning', icon: '⏳', label: 'Pendiente' },
+            ejecutada: { cls: 'badge-success', icon: '✅', label: 'Ejecutada' },
+            cancelada: { cls: 'badge-critical', icon: '✗', label: 'Cancelada' },
           };
           const notesPlaceholder = {
             ejecutada: 'Ej. Se aplicó correctamente en todo el lote, condiciones climáticas favorables...',
@@ -9793,10 +10053,10 @@
 
         if (mOrderModal) {
           const closeModal = () => { setMOrderModal(false); setMOrderConfirm(false); setMOrderEditing(null); setMOrderForm(mDefaultOrderForm); };
-          const mCfLot      = DATA.lots.find(l => l.id === Number(mOrderForm.lotId));
-          const mCfField    = DATA.fields.find(f => f.id === Number(mOrderForm.fieldId));
+          const mCfLot = DATA.lots.find(l => l.id === Number(mOrderForm.lotId));
+          const mCfField = DATA.fields.find(f => f.id === Number(mOrderForm.fieldId));
           const mCfCampaign = DATA.campaigns.find(c => c.id === Number(mOrderForm.campaignId));
-          const mTotal      = mCalcTotal();
+          const mTotal = mCalcTotal();
 
           // ── Confirmación ──────────────────────────────────────────────────────
           if (mOrderConfirm) {
@@ -9831,11 +10091,11 @@
                   </div>
                   <MSection title="Datos generales" icon="📍">
                     <MRow label="Tipo de aplicación" value={mOrderForm.appType || null} />
-                    <MRow label="Campo"              value={mCfField?.name} />
-                    <MRow label="Lote"               value={mCfLot ? `${mCfLot.name}` : null} />
-                    <MRow label="Campaña"            value={mCfCampaign ? `${mCfCampaign.crop} — desde ${fmt.date(mCfCampaign.startDate)}` : null} />
-                    <MRow label="Fecha"              value={mOrderForm.date ? fmt.date(mOrderForm.date) : null} />
-                    <MRow label="Equipo"             value={mOrderForm.equipment || null} />
+                    <MRow label="Campo" value={mCfField?.name} />
+                    <MRow label="Lote" value={mCfLot ? `${mCfLot.name}` : null} />
+                    <MRow label="Campaña" value={mCfCampaign ? `${mCfCampaign.crop} — desde ${fmt.date(mCfCampaign.startDate)}` : null} />
+                    <MRow label="Fecha" value={mOrderForm.date ? fmt.date(mOrderForm.date) : null} />
+                    <MRow label="Equipo" value={mOrderForm.equipment || null} />
                   </MSection>
                   {mOrderForm.products.filter(p => p.name).length > 0 && (
                     <MSection title="Productos" icon="🧪">
@@ -9857,8 +10117,8 @@
                   )}
                   {(mParseNum(mOrderForm.transportCost) + mCalcFuel() + mCalcLabor() + mParseNum(mOrderForm.otherCost)) > 0 && (
                     <MSection title="Costos adicionales" icon="💰">
-                      <MRow label="Traslado"     value={mParseNum(mOrderForm.transportCost) > 0 ? fmt.currency(mParseNum(mOrderForm.transportCost)) : null} />
-                      <MRow label="Combustible"  value={mCalcFuel() > 0 ? `${mOrderForm.fuelLiters} L × ${fmt.currency(mParseNum(mOrderForm.fuelPrice))} = ${fmt.currency(mCalcFuel())}` : null} />
+                      <MRow label="Traslado" value={mParseNum(mOrderForm.transportCost) > 0 ? fmt.currency(mParseNum(mOrderForm.transportCost)) : null} />
+                      <MRow label="Combustible" value={mCalcFuel() > 0 ? `${mOrderForm.fuelLiters} L × ${fmt.currency(mParseNum(mOrderForm.fuelPrice))} = ${fmt.currency(mCalcFuel())}` : null} />
                       <MRow label="Mano de obra" value={mCalcLabor() > 0 ? `${mOrderForm.laborDays} jornales × ${fmt.currency(mParseNum(mOrderForm.laborPrice))} = ${fmt.currency(mCalcLabor())}` : null} />
                       <MRow label={mOrderForm.otherDesc || 'Otros'} value={mParseNum(mOrderForm.otherCost) > 0 ? fmt.currency(mParseNum(mOrderForm.otherCost)) : null} />
                     </MSection>
@@ -10123,18 +10383,18 @@
         const cfgLotCampaigns = cfgLot ? DATA.campaigns.filter(c => c.lotId === Number(cfgLot)) : [];
         const cfgKey = cfgField && cfgLot && cfgCampaign ? `${cfgField}-${cfgLot}-${cfgCampaign}` : null;
         const mDefaultPestCfg = () => ([
-          { id: 1, name: 'Roya asiática',       crop: 'Soja',         defaultThreshold: 15,  defaultUnit: '%',              custom: '', active: true  },
-          { id: 2, name: 'Trips del maíz',      crop: 'Maíz',         defaultThreshold: 25,  defaultUnit: 'trips/hoja',     custom: '', active: true  },
-          { id: 3, name: 'Pulgón verde',         crop: 'Soja / Trigo', defaultThreshold: 500, defaultUnit: 'pulgones/metro', custom: '', active: true  },
-          { id: 4, name: 'Chinche de la soja',  crop: 'Soja',         defaultThreshold: 1,   defaultUnit: 'chinche/metro',  custom: '', active: true  },
-          { id: 5, name: 'Fusariosis',           crop: 'Trigo / Maíz',defaultThreshold: 10,  defaultUnit: '%',              custom: '', active: false },
+          { id: 1, name: 'Roya asiática', crop: 'Soja', defaultThreshold: 15, defaultUnit: '%', custom: '', active: true },
+          { id: 2, name: 'Trips del maíz', crop: 'Maíz', defaultThreshold: 25, defaultUnit: 'trips/hoja', custom: '', active: true },
+          { id: 3, name: 'Pulgón verde', crop: 'Soja / Trigo', defaultThreshold: 500, defaultUnit: 'pulgones/metro', custom: '', active: true },
+          { id: 4, name: 'Chinche de la soja', crop: 'Soja', defaultThreshold: 1, defaultUnit: 'chinche/metro', custom: '', active: true },
+          { id: 5, name: 'Fusariosis', crop: 'Trigo / Maíz', defaultThreshold: 10, defaultUnit: '%', custom: '', active: false },
         ]);
         const mDefaultPhenoCfg = () => ([
-          { stage: 'Germinación',    icon: '🌱', days: 5,  active: true },
-          { stage: 'Macollaje',      icon: '🌿', days: 7,  active: true },
-          { stage: 'Floración',      icon: '🌸', days: 4,  active: true },
-          { stage: 'Fructificación', icon: '🌾', days: 6,  active: true },
-          { stage: 'Madurez',        icon: '🟡', days: 10, active: true },
+          { stage: 'Germinación', icon: '🌱', days: 5, active: true },
+          { stage: 'Macollaje', icon: '🌿', days: 7, active: true },
+          { stage: 'Floración', icon: '🌸', days: 4, active: true },
+          { stage: 'Fructificación', icon: '🌾', days: 6, active: true },
+          { stage: 'Madurez', icon: '🟡', days: 10, active: true },
         ]);
         const onMCfgFieldChange = fid => {
           setCfgField(fid); setCfgLot(''); setCfgCampaign('');
@@ -10174,7 +10434,7 @@
             <div className="tabs" style={{ marginBottom: 16 }}>
               <div className={`tab ${tab === 'active' ? 'active' : ''}`} onClick={() => setTab('active')} style={{ fontSize: 12, padding: '10px 12px' }}>Activas ({sorted.length})</div>
               <div className={`tab ${tab === 'config' ? 'active' : ''}`} onClick={() => setTab('config')} style={{ fontSize: 12, padding: '10px 12px' }}>Configurar Alertas</div>
-              <div className={`tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')} style={{ fontSize: 12, padding: '10px 12px' }}>Historial</div>
+              <div className={`tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')} style={{ fontSize: 12, padding: '10px 12px' }}>Historial de alertas</div>
             </div>
 
             {tab === 'active' && (
@@ -10308,23 +10568,33 @@
 
             {tab === 'history' && (
               <div>
-                {DATA.resolvedAlerts.length === 0 && (
+                {(!DATA.alertsHistory || DATA.alertsHistory.length === 0) && (
                   <div className="empty-state" style={{ padding: '40px 0' }}>
                     <div className="empty-state-icon">📂</div>
                     <div className="empty-state-text">Historial vacío</div>
                   </div>
                 )}
-                {DATA.resolvedAlerts.map(a => (
+                {(DATA.alertsHistory || []).map(a => (
                   <div key={a.id} className="m-card" style={{ marginBottom: 10 }}>
                     <div className="m-card-body">
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14 }}>{a.lotName}</span>
-                        <span className="badge badge-neutral" style={{ fontSize: 10 }}>{a.type}</span>
+                        <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: 14 }}>
+                          {DATA.lots.find(l => l.id === a.lotId)?.name || 'Lote'}
+                        </span>
+                        <span className={`badge ${alertSevBadge[a.severity]}`} style={{ fontSize: 10 }}>
+                          {alertSevIcon[a.severity]} {alertSevLabel[a.severity]}
+                        </span>
                       </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>{a.description}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>
+                        {a.type === 'fenologica'
+                          ? `Alerta fenológica: Etapa ${a.stage}. retraso de ${a.delayDays} días (umbral ${a.threshold}).`
+                          : `Alerta sanitaria: ${a.pestName} con incidencia del ${a.incidence}% (umbral ${a.threshold}).`}
+                      </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                         <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{fmt.date(a.date)}</span>
-                        <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>✓ {a.resolution}</span>
+                        <span className="badge badge-neutral" style={{ fontSize: 10 }}>
+                          {a.type === 'fenologica' ? '🌱 Fenológica' : '🐛 Plagas'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -10653,7 +10923,7 @@
                       {(() => {
                         const BAR_W = 26, GAP = 5, GROUP_GAP = 28, PAD_L = 56, PAD_B = 44, H = 160;
                         const maxVal = Math.max(1, ...mBalanceLotData.flatMap(d => [d.revenue, d.costs.total])) * 1.18;
-                        const fmtY = v => v >= 1000000 ? `$${(v/1000000).toFixed(1)}M` : v >= 1000 ? `$${Math.round(v/1000)}k` : `$${Math.round(v)}`;
+                        const fmtY = v => v >= 1000000 ? `$${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `$${Math.round(v / 1000)}k` : `$${Math.round(v)}`;
                         const totalW = PAD_L + mBalanceLotData.length * (BAR_W * 2 + GAP + GROUP_GAP);
                         return (
                           <svg width={Math.max(280, totalW)} height={H + PAD_B} style={{ overflow: 'visible' }}>
